@@ -1,0 +1,15 @@
+plugins {
+	id 'java'
+}
+
+repositories {
+	maven { url 'https://repo.velocitypowered.com/snapshots' }
+}
+
+dependencies {
+	compile project(':trevor-api')
+	compile project(':trevor-common')
+
+	compile "com.velocitypowered:velocity-api:${velocityVersion}"
+	annotationProcessor "com.velocitypowered:velocity-api:1.0.1"
+}

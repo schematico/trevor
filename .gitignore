@@ -1,0 +1,34 @@
+# Eclipse #
+.classpath
+.project
+.settings
+
+# IntelliJ #
+*.iml
+*.ipr
+*.iws
+.idea/
+# NetBeans #
+
+nbproject
+
+# Maven #
+build.xml
+target
+
+# Mac #
+.DS_Store
+
+# Vim #
+.*.sw[a-p]
+
+# Misc #
+build
+bin
+dist
+manifest.mf
+
+# Deploy #
+pom.xml.releaseBackup
+release.properties
+/.gradle/

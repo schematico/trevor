@@ -1,0 +1,13 @@
+rootProject.name = 'trevor'
+
+include (
+	'api',
+	'common',
+	'bungee',
+	'velocity'
+)
+
+findProject(':api')?.name = 'trevor-api'
+findProject(':common')?.name = 'trevor-common'
+findProject(':bungee')?.name = 'trevor-bungee'
+findProject(':velocity')?.name = 'trevor-velocity'
