@@ -4,6 +4,7 @@ plugins {
 
 repositories {
 	maven { url 'https://repo.velocitypowered.com/snapshots' }
+	maven { url 'https://repo.spongepowered.org/maven' }
 }
 
 dependencies {
