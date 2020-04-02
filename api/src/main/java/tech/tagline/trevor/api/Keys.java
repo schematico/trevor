@@ -5,7 +5,7 @@ public enum Keys {
 
   DATABASE_HEARTBEAT("heartbeat"),
 
-  INSTANCE_PLAYERS("proxy:{}:players"),
+  INSTANCE_PLAYERS("instance:{}:players"),
 
   PLAYER_DATA("player:{}");
 
