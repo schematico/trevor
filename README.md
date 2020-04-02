@@ -1,5 +1,5 @@
 # Trevor (n.) \tɹˈɛvə\
-[![Discord](https://img.shields.io/discord/548983491157819413.svg?logo=discord&label=)](https://discord.gg/7AEgrbE)
+![Java CI with Gradle](https://github.com/TaglineTech/Trevor/workflows/Java%20CI%20with%20Gradle/badge.svg) [![Discord](https://img.shields.io/discord/548983491157819413.svg?logo=discord&label=)](https://discord.gg/7AEgrbE)
 
 Trevor is an open-source platform independant solution that unionizes Redis and [Notchian-compliant](https://www.spigotmc.org/threads/what-is-notchian.156265/#post-1659509) proxies for cross-instance proxy communication.
 
@@ -16,7 +16,8 @@ As the project progresses, it is our goal to provide high quality, featureful cr
 * Support expansion means that more platforms than just BungeeCord and Velocity will be supported. We also hope to perhaps also support Minecraft: Bedrock Edition as well in the future.
 
 ## Building Trevor
-```git clone https://github.com/TaglineTech/Trevor.git
+```
+git clone https://github.com/TaglineTech/Trevor.git
 cd Trevor/
 ./gradlew build
 ```
