@@ -30,4 +30,4 @@ jobs:
         # Artifact name
         name: Trevor
         # Directory containing files to upload
-        path: artifacts/trevor
+        path: build/libs/
