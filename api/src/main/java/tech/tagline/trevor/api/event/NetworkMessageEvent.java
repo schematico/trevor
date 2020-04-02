@@ -1,20 +1,8 @@
 package tech.tagline.trevor.api.event;
 
-public class NetworkMessageEvent implements NetworkEvent {
+public interface NetworkMessageEvent extends NetworkEvent {
 
-  private final String channel;
-  private final String message;
+  String getChannel();
 
-  public NetworkMessageEvent(String channel, String message) {
-    this.channel = channel;
-    this.message = message;
-  }
-
-  public String getChannel() {
-    return channel;
-  }
-
-  public String getMessage() {
-    return message;
-  }
+  String getMessage();
 }

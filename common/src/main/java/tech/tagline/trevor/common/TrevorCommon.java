@@ -3,18 +3,21 @@ package tech.tagline.trevor.common;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.exceptions.JedisConnectionException;
+import tech.tagline.trevor.api.Keys;
+import tech.tagline.trevor.common.data.InstanceData;
+import tech.tagline.trevor.common.handler.DataHandler;
 import tech.tagline.trevor.common.handler.RedisMessageHandler;
 import tech.tagline.trevor.common.platform.Platform;
 import tech.tagline.trevor.common.util.RedisIO;
-
-import java.util.Set;
 
 public class TrevorCommon {
 
   private final Platform platform;
 
   private JedisPool pool;
+  private DataHandler dataHandler;
   private RedisMessageHandler messageHandler;
+  private InstanceData instanceData;
 
   public TrevorCommon(Platform platform) {
     this.platform = platform;
@@ -25,21 +28,22 @@ public class TrevorCommon {
 
     this.pool = platform.getRedisConfiguration().create();
 
+    this.dataHandler = new DataHandler(this);
     this.messageHandler = new RedisMessageHandler(this);
 
     return true;
   }
 
   public boolean start() {
+    String instanceID = platform.getInstanceConfiguration().getInstanceID();
     // Test connection and perform heartbeat
     try (Jedis resource = pool.getResource()) {
       resource.ping();
 
-      String id = platform.getInstanceConfiguration().getInstanceID();
-
-      if (resource.hexists("heartbeat", id)) {
-        long lastBeat = Long.parseLong(resource.hget("heartbeat", id));
-        long databaseTime = RedisIO.getRedisTime(resource.time());
+      // Make sure another instance isn't running with the same ID
+      if (resource.hexists(Keys.DATABASE_HEARTBEAT.of(), instanceID)) {
+        long lastBeat = Long.parseLong(resource.hget(Keys.DATABASE_HEARTBEAT.of(), instanceID));
+        long databaseTime = RedisIO.getTime(resource.time());
         if (databaseTime < lastBeat + 20) {
           // TODO: Shutdown and inform console
           return false;
@@ -63,12 +67,11 @@ public class TrevorCommon {
     if (pool != null) {
       messageHandler.destroy();
 
-      String id = platform.getInstanceConfiguration().getInstanceID();
+      String instanceID = platform.getInstanceConfiguration().getInstanceID();
       try (Jedis resource = pool.getResource()) {
-        resource.hdel("heartbeat", id);
-        if (resource.scard("proxy:" + id + ":players") > 0) {
-          resource.smembers("proxy:" + id + ":players")
-                  .forEach(player -> RedisIO.destroy(resource, id, player));
+        resource.hdel("heartbeat", instanceID);
+        if (resource.scard(Keys.INSTANCE_PLAYERS.with(instanceID)) > 0) {
+          resource.smembers(Keys.INSTANCE_PLAYERS.with(instanceID)).forEach(dataHandler::destroy);
         }
       }
     }

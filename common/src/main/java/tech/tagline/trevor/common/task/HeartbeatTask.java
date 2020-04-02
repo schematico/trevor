@@ -18,7 +18,7 @@ public class HeartbeatTask implements Runnable {
   public void run() {
     String id = common.getPlatform().getInstanceConfiguration().getInstanceID();
     try (Jedis resource = common.getPool().getResource()) {
-      long databaseTime = RedisIO.getRedisTime(resource.time());
+      long databaseTime = RedisIO.getTime(resource.time());
       resource.hset(Keys.DATABASE_HEARTBEAT.of(), id, String.valueOf(databaseTime));
     } catch (JedisConnectionException exception) {
       // TODO: Notify console in a nicer way

@@ -2,6 +2,8 @@ package tech.tagline.trevor.api;
 
 public enum Keys {
   CHANNEL_DATA("trevor:data"),
+  CHANNEL_INSTANCE("trevor:{}"),
+  CHANNEL_SERVERS("trevor:servers"),
 
   DATABASE_HEARTBEAT("heartbeat"),
 

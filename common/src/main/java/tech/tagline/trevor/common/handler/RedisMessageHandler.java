@@ -3,6 +3,7 @@ package tech.tagline.trevor.common.handler;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPubSub;
 import redis.clients.jedis.exceptions.JedisConnectionException;
+import tech.tagline.trevor.api.Keys;
 import tech.tagline.trevor.api.event.NetworkMessageEvent;
 import tech.tagline.trevor.common.TrevorCommon;
 
@@ -37,16 +38,17 @@ public class RedisMessageHandler implements Runnable {
 
   @Override
   public void run() {
+    String id = common.getPlatform().getInstanceConfiguration().getInstanceID();
     try (Jedis resource = common.getPool().getResource()) {
-      channels.add("trevor:" + common.getPlatform().getInstanceConfiguration().getInstanceID());
-      channels.add("trevor:servers");
-      channels.add("trevor:data");
+      channels.add(Keys.CHANNEL_INSTANCE.with(id));
+      channels.add(Keys.CHANNEL_SERVERS.of());
+      channels.add(Keys.CHANNEL_DATA.of());
 
       this.pipeline = new JedisPubSub() {
         @Override
         public void onMessage(final String channel, final String message) {
           if (message.trim().length() > 0) {
-            common.getPlatform().post(new NetworkMessageEvent(channel, message));
+            common.getPlatform().getEventProcessor().onMessage(channel, message).post();
           }
         }
       };

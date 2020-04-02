@@ -10,6 +10,9 @@ public interface Platform {
 
   RedisConfiguration getRedisConfiguration();
 
-  // TODO: Give response of some type
-  void post(NetworkEvent event);
+  <T> T fromJson(String json, Class<T> clazz);
+
+  <T> String toJson(T value);
+
+  EventProcessor getEventProcessor();
 }
