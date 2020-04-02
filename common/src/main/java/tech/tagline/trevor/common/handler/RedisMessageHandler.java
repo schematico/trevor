@@ -11,14 +11,14 @@ import java.util.stream.Collectors;
 
 public class RedisMessageHandler implements Runnable {
 
-  private final TrevorCommon trevor;
-
-  public RedisMessageHandler(TrevorCommon trevor) {
-    this.trevor = trevor;
-  }
+  private final TrevorCommon common;
 
   private JedisPubSub pipeline;
-  private Set<String> channels = new HashSet<String>();
+  private Set<String> channels = new HashSet<>();
+
+  public RedisMessageHandler(TrevorCommon common) {
+    this.common = common;
+  }
 
   public void add(String... channel) {
     channels.addAll(Arrays.asList(channel));
@@ -37,8 +37,8 @@ public class RedisMessageHandler implements Runnable {
 
   @Override
   public void run() {
-    try (Jedis resource = trevor.getPool().getResource()) {
-      channels.add("trevor:" + trevor.getPlatform().getInstanceConfiguration().getInstanceID());
+    try (Jedis resource = common.getPool().getResource()) {
+      channels.add("trevor:" + common.getPlatform().getInstanceConfiguration().getInstanceID());
       channels.add("trevor:servers");
       channels.add("trevor:data");
 
@@ -46,7 +46,7 @@ public class RedisMessageHandler implements Runnable {
         @Override
         public void onMessage(final String channel, final String message) {
           if (message.trim().length() > 0) {
-            trevor.getPlatform().post(new NetworkMessageEvent(channel, message));
+            common.getPlatform().post(new NetworkMessageEvent(channel, message));
           }
         }
       };
