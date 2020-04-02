@@ -10,7 +10,7 @@ As a community, to unionize our thinking (and as well as our proxies!) setting g
 Trevor as an idea was created to build upon the ideas set forth by [RedisBungee](https://github.com/minecrafter/RedisBungee) by creating a solution that has the ability to work with multiple proxy softwares in order to satisfy the need for cross-instance proxy communication. We developed Trevor because there are platforms where such cross-instance proxy communication simply does not exist.
 
 #### Future goals
-As the project progresses, it is our goal to provide high quality, featureful cross-instance proxy communication in the future. We have plans to expand in two main areas: storage and support. 
+As the project progresses, it is our goal to provide high quality, featureful cross-instance proxy communication. We have future plans to expand in two main areas: storage and support. 
 
 * Storage expansion means eventually, more ways to synchronize the servers will become avaliable as a replacement to just Redis at the moment. 
 * Support expansion means that more platforms than just BungeeCord and Velocity will be supported. We also hope to perhaps also support Minecraft: Bedrock Edition as well in the future.
