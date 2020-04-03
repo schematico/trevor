@@ -39,27 +39,6 @@ public class BungeeEventProcessor implements EventProcessor {
   }
 
   private <T extends BungeeNetworkEvent> EventAction<T> wrap(T event) {
-    return new BungeeEventAction<T>(event, plugin.getProxy().getPluginManager()::callEvent);
-  }
-
-  public class BungeeEventAction<T extends BungeeNetworkEvent> implements EventAction<T> {
-
-    private final T event;
-    private final Consumer<T> postCall;
-
-    public BungeeEventAction(T event, Consumer<T> postCall) {
-      this.event = event;
-      this.postCall = postCall;
-    }
-
-    @Override
-    public T getEvent() {
-      return null;
-    }
-
-    @Override
-    public void post() {
-      postCall.accept(event);
-    }
+    return new EventAction<T>(event, plugin.getProxy().getPluginManager()::callEvent);
   }
 }

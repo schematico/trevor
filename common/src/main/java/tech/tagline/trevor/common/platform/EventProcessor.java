@@ -3,6 +3,7 @@ package tech.tagline.trevor.common.platform;
 import tech.tagline.trevor.api.event.*;
 
 import java.util.UUID;
+import java.util.function.Consumer;
 
 public interface EventProcessor {
 
@@ -15,10 +16,22 @@ public interface EventProcessor {
 
   <T extends NetworkConnectEvent> EventAction<T> onMessage(String channel, String message);
 
-  interface EventAction<T extends NetworkEvent> {
+  class EventAction<T extends NetworkEvent> {
 
-    T getEvent();
+    private final T event;
+    private final Consumer<T> postCall;
 
-    void post();
+    public EventAction(T event, Consumer<T> postCall) {
+      this.event = event;
+      this.postCall = postCall;
+    }
+
+    public T getEvent() {
+      return null;
+    }
+
+    public void post() {
+      postCall.accept(event);
+    }
   }
 }

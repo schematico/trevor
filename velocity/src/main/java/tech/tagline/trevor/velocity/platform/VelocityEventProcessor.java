@@ -37,27 +37,6 @@ public class VelocityEventProcessor implements EventProcessor {
   }
 
   private <T extends VelocityNetworkEvent> EventAction<T> wrap(T event) {
-    return new VelocityEventAction<T>(event, plugin.getProxy().getEventManager()::fireAndForget);
-  }
-
-  public class VelocityEventAction<T extends VelocityNetworkEvent> implements EventAction<T> {
-
-    private final T event;
-    private final Consumer<T> postCall;
-
-    public VelocityEventAction(T event, Consumer<T> postCall) {
-      this.event = event;
-      this.postCall = postCall;
-    }
-
-    @Override
-    public T getEvent() {
-      return null;
-    }
-
-    @Override
-    public void post() {
-      postCall.accept(event);
-    }
+    return new EventAction<T>(event, plugin.getProxy().getEventManager()::fireAndForget);
   }
 }
