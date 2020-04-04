@@ -93,4 +93,9 @@ public class VelocityPlatform implements Platform {
   public EventProcessor getEventProcessor() {
     return eventProcessor;
   }
+
+  @Override
+  public boolean isOnlineMode() {
+    return plugin.getProxy().getConfiguration().isOnlineMode();
+  }
 }

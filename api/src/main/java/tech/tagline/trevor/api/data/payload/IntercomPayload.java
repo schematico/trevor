@@ -16,6 +16,22 @@ public class IntercomPayload {
     this.data = data;
   }
 
+  public Type getType() {
+    return type;
+  }
+
+  public UUID getUuid() {
+    return uuid;
+  }
+
+  public String getSource() {
+    return source;
+  }
+
+  public Object getData() {
+    return data;
+  }
+
   public enum Type {
     CONNECT,
     DISCONNECT,

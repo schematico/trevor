@@ -1,6 +1,7 @@
 package tech.tagline.trevor.bungee;
 
 import com.google.gson.Gson;
+import tech.tagline.trevor.bungee.platform.BungeeListener;
 import tech.tagline.trevor.bungee.platform.BungeePlatform;
 import tech.tagline.trevor.common.TrevorCommon;
 import net.md_5.bungee.api.plugin.Plugin;
@@ -24,11 +25,21 @@ public class TrevorBungee extends Plugin {
 
   @Override
   public void onEnable() {
+    getProxy().getPluginManager().registerListener(this, new BungeeListener(this));
+
     trevor.start();
   }
 
   @Override
   public void onDisable() {
     trevor.stop();
+  }
+
+  public BungeePlatform getPlatform() {
+    return platform;
+  }
+
+  public TrevorCommon getTrevor() {
+    return trevor;
   }
 }

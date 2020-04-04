@@ -15,4 +15,6 @@ public interface Platform {
   <T> String toJson(T value);
 
   EventProcessor getEventProcessor();
+
+  boolean isOnlineMode();
 }

@@ -4,18 +4,17 @@ import com.google.common.collect.ImmutableList;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.Pipeline;
 import redis.clients.jedis.exceptions.JedisConnectionException;
+import sun.security.jca.GetInstance;
 import tech.tagline.trevor.api.Keys;
 import tech.tagline.trevor.api.data.User;
 import tech.tagline.trevor.api.data.payload.ConnectData;
 import tech.tagline.trevor.api.data.payload.DisconnectData;
 import tech.tagline.trevor.api.data.payload.IntercomPayload;
+import tech.tagline.trevor.api.data.payload.ServerChangeData;
 import tech.tagline.trevor.common.TrevorCommon;
 import tech.tagline.trevor.common.platform.Platform;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -27,14 +26,13 @@ public class DataHandler {
   private final TrevorCommon common;
   private final Platform platform;
   private final String instanceID;
-
-  private List<String> instances;
-  private AtomicInteger currentPlayers;
+  private final InstanceData instanceData;
 
   public DataHandler(TrevorCommon common) {
     this.common = common;
     this.platform = common.getPlatform();
     this.instanceID = platform.getInstanceConfiguration().getInstanceID();
+    this.instanceData = new InstanceData();
   }
 
   public void beat(long timestamp) {
@@ -53,8 +51,9 @@ public class DataHandler {
           // TODO: Potentially notify that the instance could be dead.
         }
       }
-      this.instances = builder.build();
-      this.currentPlayers.set(totalPlayers);
+
+      instanceData.instances = builder.build();
+      instanceData.playerCount.set(totalPlayers);
     }
   }
 
@@ -65,7 +64,7 @@ public class DataHandler {
                 user.getUUID().toString())) {
           Map<String, String> data = user.toDatabaseMap(instanceID);
 
-          resource.hmset(Keys.PLAYER_DATA.with(user.getUUID().toString()), data);
+          resource.hmset(Keys.PLAYER_DATA.with(user), data);
           resource.sadd(Keys.INSTANCE_PLAYERS.with(instanceID), user.getUUID().toString());
         }
 
@@ -103,7 +102,33 @@ public class DataHandler {
     });
   }
 
-  public List<String> getInstances() {
-    return instances;
+  public void setServer(User user, String server, String previousServer, boolean post) {
+    try (Jedis resource = common.getPool().getResource()) {
+      resource.hset(Keys.PLAYER_DATA.with(user), "server", server);
+
+      if (post) {
+        IntercomPayload payload = ServerChangeData.craft(instanceID, user, server, previousServer);
+
+        resource.publish(Keys.CHANNEL_DATA.of(), platform.toJson(payload));
+      }
+    }
+  }
+
+  public InstanceData getInstanceData() {
+    return instanceData;
+  }
+
+  public static class InstanceData {
+
+    private List<String> instances = new ArrayList<>();
+    private final AtomicInteger playerCount = new AtomicInteger();
+
+    public int getPlayerCount() {
+      return playerCount.get();
+    }
+
+    public List<String> getInstances() {
+      return instances;
+    }
   }
 }

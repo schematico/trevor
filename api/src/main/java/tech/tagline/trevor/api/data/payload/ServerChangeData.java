@@ -1,6 +1,6 @@
 package tech.tagline.trevor.api.data.payload;
 
-import java.util.UUID;
+import tech.tagline.trevor.api.data.User;
 
 public class ServerChangeData {
 
@@ -20,9 +20,9 @@ public class ServerChangeData {
     return previousServer;
   }
 
-  public static IntercomPayload craft(String instanceID, UUID uuid, String server,
+  public static IntercomPayload craft(String instanceID, User user, String server,
                                       String previousServer) {
-    return new IntercomPayload(IntercomPayload.Type.SERVERCHANGE, uuid, instanceID,
+    return new IntercomPayload(IntercomPayload.Type.SERVERCHANGE, user.getUUID(), instanceID,
             new ServerChangeData(server, previousServer));
   }
 }

@@ -4,10 +4,17 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPubSub;
 import redis.clients.jedis.exceptions.JedisConnectionException;
 import tech.tagline.trevor.api.Keys;
+import tech.tagline.trevor.api.data.payload.ConnectData;
+import tech.tagline.trevor.api.data.payload.DisconnectData;
+import tech.tagline.trevor.api.data.payload.IntercomPayload;
+import tech.tagline.trevor.api.data.payload.ServerChangeData;
+import tech.tagline.trevor.api.event.NetworkEvent;
 import tech.tagline.trevor.api.event.NetworkMessageEvent;
 import tech.tagline.trevor.common.TrevorCommon;
+import tech.tagline.trevor.common.platform.EventProcessor;
 
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 public class RedisMessageHandler implements Runnable {
@@ -48,7 +55,11 @@ public class RedisMessageHandler implements Runnable {
         @Override
         public void onMessage(final String channel, final String message) {
           if (message.trim().length() > 0) {
-            common.getPlatform().getEventProcessor().onMessage(channel, message).post();
+            if (channel.equals(Keys.CHANNEL_DATA.of())) {
+              intercom(common.getPlatform().fromJson(message, IntercomPayload.class));
+            } else {
+              common.getPlatform().getEventProcessor().onMessage(channel, message).post();
+            }
           }
         }
       };
@@ -56,6 +67,32 @@ public class RedisMessageHandler implements Runnable {
       resource.subscribe(pipeline, channels.toArray(new String[0]));
     } catch (JedisConnectionException exception) {
       exception.printStackTrace();
+    }
+  }
+
+  private void intercom(IntercomPayload payload) {
+    switch(payload.getType()) {
+      case CONNECT:
+        ConnectData connectData = (ConnectData) payload.getData();
+
+        // TODO: Update local cache
+
+        common.getPlatform().getEventProcessor().onConnect(payload.getUuid());
+      case DISCONNECT:
+        DisconnectData diconnectData = (DisconnectData) payload.getData();
+
+        // TODO: Update local cache
+
+        common.getPlatform().getEventProcessor().onDisconnect(payload.getUuid());
+      case SERVERCHANGE:
+        ServerChangeData serverChangeData = (ServerChangeData) payload.getData();
+
+        // TODO: Update local cache
+
+        common.getPlatform().getEventProcessor().onServerChange(payload.getUuid(),
+                serverChangeData.getServer(), serverChangeData.getPreviousServer());
+      default:
+        // TODO: Notify console of illegal intercom
     }
   }
 }

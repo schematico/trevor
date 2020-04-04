@@ -1,22 +1,32 @@
 package tech.tagline.trevor.api.data;
 
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public interface User {
+public abstract class User {
 
-  UUID getUUID();
+  private UUID uuid;
+  private String address;
 
-  InetAddress getAddress();
+  protected User(UUID uuid, String address) {
+    this.uuid = uuid;
+    this.address = address;
+  }
 
-  default Map<String, String> toDatabaseMap(String instanceID) {
+  public UUID getUUID() {
+    return uuid;
+  }
+
+  public String getAddress() {
+    return address;
+  }
+
+  public Map<String, String> toDatabaseMap(String instanceID) {
     Map<String, String> data = new HashMap<>(4);
 
     data.put("lastOnline", "0");
-    data.put("ip", getAddress().getHostAddress());
+    data.put("ip", address);
     data.put("instance", instanceID);
 
     return data;

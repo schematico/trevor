@@ -9,12 +9,12 @@ public interface EventProcessor {
 
   <T extends NetworkConnectEvent> EventAction<T> onConnect(UUID uuid);
 
-  <T extends NetworkConnectEvent> EventAction<T> onDisconnect(UUID uuid);
+  <T extends NetworkDisconnectEvent> EventAction<T> onDisconnect(UUID uuid);
 
-  <T extends NetworkConnectEvent> EventAction<T> onServerChange(UUID uuid, String server,
+  <T extends NetworkServerChangeEvent> EventAction<T> onServerChange(UUID uuid, String server,
                                                                  String previousServer);
 
-  <T extends NetworkConnectEvent> EventAction<T> onMessage(String channel, String message);
+  <T extends NetworkMessageEvent> EventAction<T> onMessage(String channel, String message);
 
   class EventAction<T extends NetworkEvent> {
 

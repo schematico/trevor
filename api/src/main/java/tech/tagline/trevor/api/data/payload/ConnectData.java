@@ -1,21 +1,20 @@
 package tech.tagline.trevor.api.data.payload;
 
-import java.net.InetAddress;
 import java.util.UUID;
 
 public class ConnectData {
 
-  private final InetAddress address;
+  private final String address;
 
-  public ConnectData(InetAddress address) {
+  public ConnectData(String address) {
     this.address = address;
   }
 
-  public InetAddress getAddress() {
+  public String getAddress() {
     return address;
   }
 
-  public static IntercomPayload craft(String instanceID, UUID uuid, InetAddress address) {
+  public static IntercomPayload craft(String instanceID, UUID uuid, String address) {
     return new IntercomPayload(IntercomPayload.Type.CONNECT, uuid, instanceID,
             new ConnectData(address));
   }

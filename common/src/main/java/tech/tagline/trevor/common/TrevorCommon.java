@@ -4,8 +4,8 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.exceptions.JedisConnectionException;
 import tech.tagline.trevor.api.Keys;
-import tech.tagline.trevor.common.data.InstanceData;
 import tech.tagline.trevor.common.handler.DataHandler;
+import tech.tagline.trevor.common.handler.LogicHandler;
 import tech.tagline.trevor.common.handler.RedisMessageHandler;
 import tech.tagline.trevor.common.platform.Platform;
 
@@ -15,8 +15,8 @@ public class TrevorCommon {
 
   private JedisPool pool;
   private DataHandler dataHandler;
+  private LogicHandler logicHandler;
   private RedisMessageHandler messageHandler;
-  private InstanceData instanceData;
 
   public TrevorCommon(Platform platform) {
     this.platform = platform;
@@ -28,6 +28,7 @@ public class TrevorCommon {
     this.pool = platform.getRedisConfiguration().create();
 
     this.dataHandler = new DataHandler(this);
+    this.logicHandler = new LogicHandler(this);
     this.messageHandler = new RedisMessageHandler(this);
 
     return true;
@@ -89,5 +90,9 @@ public class TrevorCommon {
 
   public JedisPool getPool() {
     return pool;
+  }
+
+  public LogicHandler getLogicHandler() {
+    return logicHandler;
   }
 }

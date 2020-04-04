@@ -98,4 +98,9 @@ public class BungeePlatform implements Platform {
   public EventProcessor getEventProcessor() {
     return eventProcessor;
   }
+
+  @Override
+  public boolean isOnlineMode() {
+    return plugin.getProxy().getConfig().isOnlineMode();
+  }
 }
