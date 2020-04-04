@@ -5,7 +5,6 @@ import tech.tagline.trevor.velocity.TrevorVelocity;
 import tech.tagline.trevor.velocity.platform.event.*;
 
 import java.util.UUID;
-import java.util.function.Consumer;
 
 public class VelocityEventProcessor implements EventProcessor {
 

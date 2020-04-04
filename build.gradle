@@ -18,6 +18,7 @@ allprojects {
 	
 	ext {
         // Library versions
+        guavaVersion = "28.2-jre"
         jedisVersion = '3.2.0-SNAPSHOT'
 
         // Platform versions
@@ -44,6 +45,7 @@ allprojects {
 	}
 
     dependencies {
+        compile "com.google.guava:guava:${guavaVersion}"
         compile "redis.clients:jedis:${jedisVersion}"
     }
 }

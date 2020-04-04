@@ -8,7 +8,6 @@ import tech.tagline.trevor.common.data.InstanceData;
 import tech.tagline.trevor.common.handler.DataHandler;
 import tech.tagline.trevor.common.handler.RedisMessageHandler;
 import tech.tagline.trevor.common.platform.Platform;
-import tech.tagline.trevor.common.util.RedisIO;
 
 public class TrevorCommon {
 
@@ -36,6 +35,8 @@ public class TrevorCommon {
 
   public boolean start() {
     String instanceID = platform.getInstanceConfiguration().getInstanceID();
+    long timestamp = System.currentTimeMillis();
+
     // Test connection and perform heartbeat
     try (Jedis resource = pool.getResource()) {
       resource.ping();
@@ -43,8 +44,7 @@ public class TrevorCommon {
       // Make sure another instance isn't running with the same ID
       if (resource.hexists(Keys.DATABASE_HEARTBEAT.of(), instanceID)) {
         long lastBeat = Long.parseLong(resource.hget(Keys.DATABASE_HEARTBEAT.of(), instanceID));
-        long databaseTime = RedisIO.getTime(resource.time());
-        if (databaseTime < lastBeat + 20) {
+        if (timestamp < lastBeat + 20) {
           // TODO: Shutdown and inform console
           return false;
         }
@@ -71,11 +71,16 @@ public class TrevorCommon {
       try (Jedis resource = pool.getResource()) {
         resource.hdel("heartbeat", instanceID);
         if (resource.scard(Keys.INSTANCE_PLAYERS.with(instanceID)) > 0) {
-          resource.smembers(Keys.INSTANCE_PLAYERS.with(instanceID)).forEach(dataHandler::destroy);
+          resource.smembers(Keys.INSTANCE_PLAYERS.with(instanceID))
+                  .forEach(uuid -> dataHandler.destroy(uuid, true));
         }
       }
     }
     return true;
+  }
+
+  public DataHandler getDataHandler() {
+    return dataHandler;
   }
 
   public Platform getPlatform() {

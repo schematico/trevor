@@ -1,13 +1,10 @@
 package tech.tagline.trevor.bungee.platform;
 
-import tech.tagline.trevor.api.event.*;
 import tech.tagline.trevor.bungee.TrevorBungee;
 import tech.tagline.trevor.bungee.platform.event.*;
 import tech.tagline.trevor.common.platform.EventProcessor;
 
 import java.util.UUID;
-import java.util.concurrent.Callable;
-import java.util.function.Consumer;
 
 public class BungeeEventProcessor implements EventProcessor {
 
