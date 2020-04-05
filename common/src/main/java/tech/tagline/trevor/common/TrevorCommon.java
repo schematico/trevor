@@ -54,7 +54,6 @@ public class TrevorCommon {
         long lastBeat = Long.parseLong(resource.hget(Keys.DATABASE_HEARTBEAT.of(), instanceID));
         if (timestamp < lastBeat + 20) {
           // TODO: Shutdown and inform console
-          System.out.println("Heartbeat shutdown");
           return false;
         }
       }
