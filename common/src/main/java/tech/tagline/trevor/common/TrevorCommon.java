@@ -68,7 +68,7 @@ public class TrevorCommon {
       return false;
     }
 
-    this.messageHandlerTask = DataHandler.executor.submit(new RedisMessageHandler(this));
+    this.messageHandlerTask = DataHandler.executor.submit(messageHandler);
 
     return true;
   }
