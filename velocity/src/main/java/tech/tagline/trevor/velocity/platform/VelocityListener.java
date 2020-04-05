@@ -7,7 +7,6 @@ import com.velocitypowered.api.event.connection.LoginEvent;
 import com.velocitypowered.api.event.player.ServerConnectedEvent;
 import com.velocitypowered.api.proxy.Player;
 import net.kyori.text.Component;
-import net.kyori.text.serializer.ComponentSerializer;
 import net.kyori.text.serializer.legacy.LegacyComponentSerializer;
 import tech.tagline.trevor.common.handler.LogicHandler;
 import tech.tagline.trevor.velocity.TrevorVelocity;

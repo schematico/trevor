@@ -11,6 +11,6 @@ dependencies {
 	compile project(':trevor-api')
 	compile project(':trevor-common')
 
-	compile "com.velocitypowered:velocity-api:${velocityVersion}"
+	compileOnly "com.velocitypowered:velocity-api:${velocityVersion}"
 	annotationProcessor "com.velocitypowered:velocity-api:${velocityVersion}"
 }

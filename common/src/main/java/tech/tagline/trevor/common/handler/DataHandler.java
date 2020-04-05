@@ -2,9 +2,7 @@ package tech.tagline.trevor.common.handler;
 
 import com.google.common.collect.ImmutableList;
 import redis.clients.jedis.Jedis;
-import redis.clients.jedis.Pipeline;
 import redis.clients.jedis.exceptions.JedisConnectionException;
-import sun.security.jca.GetInstance;
 import tech.tagline.trevor.api.Keys;
 import tech.tagline.trevor.api.data.User;
 import tech.tagline.trevor.api.data.payload.ConnectData;
@@ -17,11 +15,13 @@ import tech.tagline.trevor.common.platform.Platform;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class DataHandler {
 
-  private final static ExecutorService executor = Executors.newCachedThreadPool();
+  public final static ScheduledExecutorService executor =
+          Executors.newScheduledThreadPool(8);
 
   private final TrevorCommon common;
   private final Platform platform;

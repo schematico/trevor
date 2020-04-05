@@ -11,6 +11,7 @@ import tech.tagline.trevor.velocity.TrevorVelocity;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.Future;
 
 public class VelocityPlatform implements Platform {
 
@@ -47,7 +48,7 @@ public class VelocityPlatform implements Platform {
     instance : {
       ConfigurationNode section = config.getNode("instance");
 
-      String instanceID = section.getString("id");
+      String instanceID = section.getNode("id").getString();
 
       this.instanceConfiguration = new InstanceConfiguration(instanceID);
     }

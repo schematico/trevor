@@ -8,6 +8,7 @@ buildscript {
 }
 
 allprojects {
+    apply plugin: 'com.github.johnrengelman.shadow'
     apply plugin: 'java'
 
 	group 'tech.tagline'
@@ -45,7 +46,9 @@ allprojects {
 	}
 
     dependencies {
-        compile "com.google.guava:guava:${guavaVersion}"
+        compileOnly ("com.google.guava:guava:${guavaVersion}") {
+            transitive = true
+        }
         compile "redis.clients:jedis:${jedisVersion}"
     }
 }

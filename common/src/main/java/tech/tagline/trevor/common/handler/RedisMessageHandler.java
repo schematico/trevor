@@ -51,6 +51,8 @@ public class RedisMessageHandler implements Runnable {
       channels.add(Keys.CHANNEL_SERVERS.of());
       channels.add(Keys.CHANNEL_DATA.of());
 
+      System.out.println("Pipeline creation");
+
       this.pipeline = new JedisPubSub() {
         @Override
         public void onMessage(final String channel, final String message) {

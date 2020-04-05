@@ -8,6 +8,10 @@ import tech.tagline.trevor.common.handler.DataHandler;
 import tech.tagline.trevor.common.handler.LogicHandler;
 import tech.tagline.trevor.common.handler.RedisMessageHandler;
 import tech.tagline.trevor.common.platform.Platform;
+import tech.tagline.trevor.common.task.HeartbeatTask;
+
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 public class TrevorCommon {
 
@@ -17,6 +21,9 @@ public class TrevorCommon {
   private DataHandler dataHandler;
   private LogicHandler logicHandler;
   private RedisMessageHandler messageHandler;
+
+  private Future<?> heartbeatTask;
+  private Future<?> messageHandlerTask;
 
   public TrevorCommon(Platform platform) {
     this.platform = platform;
@@ -47,11 +54,13 @@ public class TrevorCommon {
         long lastBeat = Long.parseLong(resource.hget(Keys.DATABASE_HEARTBEAT.of(), instanceID));
         if (timestamp < lastBeat + 20) {
           // TODO: Shutdown and inform console
+          System.out.println("Heartbeat shutdown");
           return false;
         }
       }
 
-      // TODO: Initiate heartbeat. Start with 0 delay to complete first beat.
+      this.heartbeatTask = DataHandler.executor.scheduleAtFixedRate(new HeartbeatTask(this),
+              0, 5, TimeUnit.SECONDS);
     } catch (JedisConnectionException exception) {
       exception.printStackTrace();
 
@@ -60,12 +69,16 @@ public class TrevorCommon {
       return false;
     }
 
+    this.messageHandlerTask = DataHandler.executor.submit(new RedisMessageHandler(this));
 
     return true;
   }
 
   public boolean stop() {
     if (pool != null) {
+      heartbeatTask.cancel(true);
+      messageHandlerTask.cancel(true);
+
       messageHandler.destroy();
 
       String instanceID = platform.getInstanceConfiguration().getInstanceID();
