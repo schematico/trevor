@@ -1,6 +1,9 @@
 package tech.tagline.trevor.velocity.platform;
 
-import tech.tagline.trevor.common.platform.EventProcessor;
+import tech.tagline.trevor.api.data.payload.ConnectPayload;
+import tech.tagline.trevor.api.data.payload.DisconnectPayload;
+import tech.tagline.trevor.api.data.payload.ServerChangePayload;
+import tech.tagline.trevor.api.event.EventProcessor;
 import tech.tagline.trevor.velocity.TrevorVelocity;
 import tech.tagline.trevor.velocity.platform.event.*;
 
@@ -15,19 +18,18 @@ public class VelocityEventProcessor implements EventProcessor {
   }
 
   @Override
-  public EventAction<VelocityNetworkConnectEvent> onConnect(UUID uuid) {
-    return wrap(new VelocityNetworkConnectEvent(uuid));
+  public EventAction<VelocityNetworkConnectEvent> onConnect(ConnectPayload payload) {
+    return wrap(new VelocityNetworkConnectEvent(payload));
   }
 
   @Override
-  public EventAction<VelocityNetworkDisconnectEvent> onDisconnect(UUID uuid) {
-    return wrap(new VelocityNetworkDisconnectEvent(uuid));
+  public EventAction<VelocityNetworkDisconnectEvent> onDisconnect(DisconnectPayload payload) {
+    return wrap(new VelocityNetworkDisconnectEvent(payload));
   }
 
   @Override
-  public EventAction<VelocityNetworkServerChangeEvent> onServerChange(UUID uuid, String server,
-                                                                     String previousServer) {
-    return wrap(new VelocityNetworkServerChangeEvent(uuid, server, previousServer));
+  public EventAction<VelocityNetworkServerChangeEvent> onServerChange(ServerChangePayload payload) {
+    return wrap(new VelocityNetworkServerChangeEvent(payload));
   }
 
   @Override
@@ -36,6 +38,6 @@ public class VelocityEventProcessor implements EventProcessor {
   }
 
   private <T extends VelocityNetworkEvent> EventAction<T> wrap(T event) {
-    return new EventAction<T>(event, plugin.getProxy().getEventManager()::fireAndForget);
+    return new EventAction<T>(event, plugin.getProxy().getEventManager()::fire);
   }
 }

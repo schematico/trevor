@@ -1,6 +1,6 @@
 package tech.tagline.trevor.api.event;
 
-public interface NetworkMessageEvent extends NetworkEvent {
+public interface NetworkIntercomEvent extends NetworkEvent {
 
   String getChannel();
 

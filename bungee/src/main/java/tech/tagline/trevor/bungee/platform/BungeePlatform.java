@@ -1,10 +1,8 @@
 package tech.tagline.trevor.bungee.platform;
 
-import com.google.gson.Gson;
-import tech.tagline.trevor.api.event.NetworkEvent;
 import tech.tagline.trevor.bungee.TrevorBungee;
 import tech.tagline.trevor.common.config.InstanceConfiguration;
-import tech.tagline.trevor.common.platform.EventProcessor;
+import tech.tagline.trevor.api.event.EventProcessor;
 import tech.tagline.trevor.common.platform.Platform;
 import tech.tagline.trevor.common.config.RedisConfiguration;
 import tech.tagline.trevor.common.util.FileIO;
@@ -85,16 +83,6 @@ public class BungeePlatform implements Platform {
   }
 
   @Override
-  public <T> T fromJson(String json, Class<T> clazz) {
-    return TrevorBungee.GSON.fromJson(json, clazz);
-  }
-
-    @Override
-  public <T> String toJson(T value) {
-    return TrevorBungee.GSON.toJson(value);
-  }
-
-  @Override
   public EventProcessor getEventProcessor() {
     return eventProcessor;
   }
@@ -102,5 +90,15 @@ public class BungeePlatform implements Platform {
   @Override
   public boolean isOnlineMode() {
     return plugin.getProxy().getConfig().isOnlineMode();
+  }
+
+  @Override
+  public void log(String message, Object... values) {
+    for (int i = 0; i < values.length; i++) {
+      Object value = values[i];
+      message = message.replace("{" + i + "}", value != null ? value.toString() : "null");
+    }
+
+    plugin.getLogger().info(message);
   }
 }

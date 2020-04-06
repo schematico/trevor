@@ -4,14 +4,13 @@ import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.yaml.YAMLConfigurationLoader;
 import tech.tagline.trevor.common.config.InstanceConfiguration;
 import tech.tagline.trevor.common.config.RedisConfiguration;
-import tech.tagline.trevor.common.platform.EventProcessor;
+import tech.tagline.trevor.api.event.EventProcessor;
 import tech.tagline.trevor.common.platform.Platform;
 import tech.tagline.trevor.common.util.FileIO;
 import tech.tagline.trevor.velocity.TrevorVelocity;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.concurrent.Future;
 
 public class VelocityPlatform implements Platform {
 
@@ -81,16 +80,6 @@ public class VelocityPlatform implements Platform {
   }
 
   @Override
-  public <T> T fromJson(String json, Class<T> clazz) {
-    return TrevorVelocity.GSON.fromJson(json, clazz);
-  }
-
-  @Override
-  public <T> String toJson(T value) {
-    return TrevorVelocity.GSON.toJson(value);
-  }
-
-  @Override
   public EventProcessor getEventProcessor() {
     return eventProcessor;
   }
@@ -98,5 +87,15 @@ public class VelocityPlatform implements Platform {
   @Override
   public boolean isOnlineMode() {
     return plugin.getProxy().getConfiguration().isOnlineMode();
+  }
+
+  @Override
+  public void log(String message, Object... values) {
+    for (int i = 0; i < values.length; i++) {
+      Object value = values[i];
+      message = message.replace("{" + i + "}", value != null ? value.toString() : "null");
+    }
+
+    plugin.getLogger().info(message);
   }
 }

@@ -7,10 +7,14 @@ import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.plugin.annotation.DataDirectory;
+import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
+import org.slf4j.Logger;
+import tech.tagline.trevor.api.event.NetworkConnectEvent;
 import tech.tagline.trevor.common.TrevorCommon;
 import tech.tagline.trevor.velocity.platform.VelocityListener;
 import tech.tagline.trevor.velocity.platform.VelocityPlatform;
+import tech.tagline.trevor.velocity.platform.event.VelocityNetworkConnectEvent;
 
 import java.nio.file.Path;
 
@@ -25,6 +29,9 @@ public class TrevorVelocity {
 
   @Inject
   private ProxyServer proxy;
+
+  @Inject
+  private Logger logger;
 
   @Inject
   @DataDirectory
@@ -60,5 +67,9 @@ public class TrevorVelocity {
 
   public TrevorCommon getTrevor() {
     return trevor;
+  }
+
+  public Logger getLogger() {
+    return logger;
   }
 }

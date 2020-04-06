@@ -1,21 +1,18 @@
 package tech.tagline.trevor.common.handler;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPubSub;
 import redis.clients.jedis.exceptions.JedisConnectionException;
 import tech.tagline.trevor.api.Keys;
-import tech.tagline.trevor.api.data.payload.ConnectData;
-import tech.tagline.trevor.api.data.payload.DisconnectData;
-import tech.tagline.trevor.api.data.payload.IntercomPayload;
-import tech.tagline.trevor.api.data.payload.ServerChangeData;
-import tech.tagline.trevor.api.event.NetworkEvent;
-import tech.tagline.trevor.api.event.NetworkMessageEvent;
+import tech.tagline.trevor.api.data.payload.ConnectPayload;
+import tech.tagline.trevor.api.data.payload.DisconnectPayload;
+import tech.tagline.trevor.api.data.payload.NetworkPayload;
+import tech.tagline.trevor.api.data.payload.ServerChangePayload;
 import tech.tagline.trevor.common.TrevorCommon;
-import tech.tagline.trevor.common.platform.EventProcessor;
 
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
 
 public class RedisMessageHandler implements Runnable {
 
@@ -56,9 +53,16 @@ public class RedisMessageHandler implements Runnable {
         public void onMessage(final String channel, final String message) {
           if (message.trim().length() > 0) {
             if (channel.equals(Keys.CHANNEL_DATA.of())) {
-              intercom(common.getPlatform().fromJson(message, IntercomPayload.class));
+              DataHandler.executor.submit(() -> {
+                try {
+                  intercom(id, message);
+                } catch (Exception exception) {
+                  exception.printStackTrace();
+                }
+              });
             } else {
-              common.getPlatform().getEventProcessor().onMessage(channel, message).post();
+              DataHandler.executor.submit(() ->
+                      common.getPlatform().getEventProcessor().onMessage(channel, message).post());
             }
           }
         }
@@ -70,29 +74,36 @@ public class RedisMessageHandler implements Runnable {
     }
   }
 
-  private void intercom(IntercomPayload payload) {
-    switch(payload.getType()) {
+  private void intercom(String id, String message) {
+    // TODO: Figure out why JsonParser#parseString() doesn't work
+    JsonObject json = new JsonParser().parse(message).getAsJsonObject();
+
+    NetworkPayload.Content content = NetworkPayload.Content
+            .valueOf(json.get("content").getAsString());
+
+    NetworkPayload payload = DataHandler.gson.fromJson(message, content.getContentClass());
+    if (id.equals(payload.getSource())) {
+      return;
+    }
+
+    switch(payload.getContent()) {
       case CONNECT:
-        ConnectData connectData = (ConnectData) payload.getData();
+        ConnectPayload connect = (ConnectPayload) payload;
 
-        // TODO: Update local cache
-
-        common.getPlatform().getEventProcessor().onConnect(payload.getUuid());
+        common.getPlatform().getEventProcessor().onConnect(connect).post();
+        break;
       case DISCONNECT:
-        DisconnectData diconnectData = (DisconnectData) payload.getData();
+        DisconnectPayload disconnect = (DisconnectPayload) payload;
 
-        // TODO: Update local cache
-
-        common.getPlatform().getEventProcessor().onDisconnect(payload.getUuid());
+        common.getPlatform().getEventProcessor().onDisconnect(disconnect).post();
+        break;
       case SERVERCHANGE:
-        ServerChangeData serverChangeData = (ServerChangeData) payload.getData();
+        ServerChangePayload serverChange = (ServerChangePayload) payload;
 
-        // TODO: Update local cache
-
-        common.getPlatform().getEventProcessor().onServerChange(payload.getUuid(),
-                serverChangeData.getServer(), serverChangeData.getPreviousServer());
+        common.getPlatform().getEventProcessor().onServerChange(serverChange).post();
+        break;
       default:
-        // TODO: Notify console of illegal intercom
+        break;
     }
   }
 }

@@ -1,6 +1,6 @@
 package tech.tagline.trevor.bungee.platform.event;
 
-import net.md_5.bungee.api.plugin.Event;
+import tech.tagline.trevor.api.data.payload.ServerChangePayload;
 import tech.tagline.trevor.api.event.NetworkServerChangeEvent;
 
 import java.util.UUID;
@@ -11,10 +11,10 @@ public class BungeeNetworkServerChangeEvent extends BungeeNetworkEvent implement
   private final String server;
   private final String previousServer;
 
-  public BungeeNetworkServerChangeEvent(UUID uuid, String server, String previousServer) {
-    this.uuid = uuid;
-    this.server = server;
-    this.previousServer = previousServer;
+  public BungeeNetworkServerChangeEvent(ServerChangePayload payload) {
+    this.uuid = payload.getUUID();
+    this.server = payload.getServer();
+    this.previousServer = payload.getPreviousServer();
   }
 
   @Override
@@ -23,12 +23,12 @@ public class BungeeNetworkServerChangeEvent extends BungeeNetworkEvent implement
   }
 
   @Override
-  public String getServerName() {
+  public String getServer() {
     return server;
   }
 
   @Override
-  public String getPreviousServerName() {
+  public String getPreviousServer() {
     return previousServer;
   }
 }

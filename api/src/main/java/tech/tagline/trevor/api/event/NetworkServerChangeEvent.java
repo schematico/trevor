@@ -6,7 +6,7 @@ public interface NetworkServerChangeEvent extends NetworkEvent {
 
   UUID getUUID();
 
-  String getServerName();
+  String getServer();
 
-  String getPreviousServerName();
+  String getPreviousServer();
 }

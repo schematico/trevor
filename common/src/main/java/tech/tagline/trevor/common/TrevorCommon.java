@@ -10,6 +10,7 @@ import tech.tagline.trevor.common.handler.RedisMessageHandler;
 import tech.tagline.trevor.common.platform.Platform;
 import tech.tagline.trevor.common.task.HeartbeatTask;
 
+import java.util.UUID;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
@@ -85,7 +86,7 @@ public class TrevorCommon {
         resource.hdel("heartbeat", instanceID);
         if (resource.scard(Keys.INSTANCE_PLAYERS.with(instanceID)) > 0) {
           resource.smembers(Keys.INSTANCE_PLAYERS.with(instanceID))
-                  .forEach(uuid -> dataHandler.destroy(uuid, true));
+                  .forEach(uuid -> dataHandler.destroy(UUID.fromString(uuid), true));
         }
       }
     }

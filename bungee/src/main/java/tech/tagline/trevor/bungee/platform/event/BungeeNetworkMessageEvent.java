@@ -1,9 +1,8 @@
 package tech.tagline.trevor.bungee.platform.event;
 
-import net.md_5.bungee.api.plugin.Event;
-import tech.tagline.trevor.api.event.NetworkMessageEvent;
+import tech.tagline.trevor.api.event.NetworkIntercomEvent;
 
-public class BungeeNetworkMessageEvent extends BungeeNetworkEvent implements NetworkMessageEvent {
+public class BungeeNetworkMessageEvent extends BungeeNetworkEvent implements NetworkIntercomEvent {
 
   private final String channel;
   private final String message;

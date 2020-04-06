@@ -26,6 +26,7 @@ public class LogicHandler {
         }
 
         common.getDataHandler().create(user, true);
+
         return ConnectResult.allow();
       }
     }
@@ -34,7 +35,7 @@ public class LogicHandler {
   }
 
   public void onPlayerDisconnect(User user) {
-    common.getDataHandler().destroy(user.getUUID().toString(), true);
+    common.getDataHandler().destroy(user.getUUID(), true);
   }
 
   public void onPlayerServerChange(User user, String server, String previousServer) {

@@ -1,6 +1,6 @@
 package tech.tagline.trevor.bungee.platform.event;
 
-import net.md_5.bungee.api.plugin.Event;
+import tech.tagline.trevor.api.data.payload.ConnectPayload;
 import tech.tagline.trevor.api.event.NetworkConnectEvent;
 
 import java.util.UUID;
@@ -8,13 +8,20 @@ import java.util.UUID;
 public class BungeeNetworkConnectEvent extends BungeeNetworkEvent implements NetworkConnectEvent {
 
   private final UUID uuid;
+  private final String address;
 
-  public BungeeNetworkConnectEvent(UUID uuid) {
-    this.uuid = uuid;
+  public BungeeNetworkConnectEvent(ConnectPayload payload) {
+    this.uuid = payload.getUUID();
+    this.address = payload.getAddress();
   }
 
   @Override
   public UUID getUUID() {
     return uuid;
+  }
+
+  @Override
+  public String getAddress() {
+    return address;
   }
 }

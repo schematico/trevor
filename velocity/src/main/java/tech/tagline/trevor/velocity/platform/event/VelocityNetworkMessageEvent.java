@@ -1,8 +1,8 @@
 package tech.tagline.trevor.velocity.platform.event;
 
-import tech.tagline.trevor.api.event.NetworkMessageEvent;
+import tech.tagline.trevor.api.event.NetworkIntercomEvent;
 
-public class VelocityNetworkMessageEvent extends VelocityNetworkEvent implements NetworkMessageEvent {
+public class VelocityNetworkMessageEvent extends VelocityNetworkEvent implements NetworkIntercomEvent {
 
   private final String channel;
   private final String message;

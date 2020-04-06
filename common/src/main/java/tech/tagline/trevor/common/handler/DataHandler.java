@@ -1,25 +1,25 @@
 package tech.tagline.trevor.common.handler;
 
 import com.google.common.collect.ImmutableList;
+import com.google.gson.Gson;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.exceptions.JedisConnectionException;
 import tech.tagline.trevor.api.Keys;
 import tech.tagline.trevor.api.data.User;
-import tech.tagline.trevor.api.data.payload.ConnectData;
-import tech.tagline.trevor.api.data.payload.DisconnectData;
-import tech.tagline.trevor.api.data.payload.IntercomPayload;
-import tech.tagline.trevor.api.data.payload.ServerChangeData;
+import tech.tagline.trevor.api.data.payload.ConnectPayload;
+import tech.tagline.trevor.api.data.payload.DisconnectPayload;
+import tech.tagline.trevor.api.data.payload.ServerChangePayload;
 import tech.tagline.trevor.common.TrevorCommon;
 import tech.tagline.trevor.common.platform.Platform;
 
 import java.util.*;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class DataHandler {
 
+  public static final Gson gson = new Gson();
   public final static ScheduledExecutorService executor =
           Executors.newScheduledThreadPool(8);
 
@@ -69,9 +69,10 @@ public class DataHandler {
         }
 
         if (post) {
-          IntercomPayload payload = ConnectData.craft(instanceID, user.getUUID(),
+          ConnectPayload payload =  ConnectPayload.of(instanceID, user.getUUID(),
                   user.getAddress());
-          resource.publish(Keys.CHANNEL_DATA.of(), platform.toJson(payload));
+
+          resource.publish(Keys.CHANNEL_DATA.of(), gson.toJson(payload));
         }
       } catch (JedisConnectionException exception) {
         // TODO: Notify console in a nicer way
@@ -80,20 +81,21 @@ public class DataHandler {
     });
   }
 
-  public void destroy(String uuid, boolean post) {
+  public void destroy(UUID uuid, boolean post) {
     executor.submit(() -> {
       long timestamp = System.currentTimeMillis();
       try (Jedis resource = common.getPool().getResource()) {
-        if (resource.sismember(Keys.INSTANCE_PLAYERS.with(instanceID), uuid)) {
-          resource.srem(Keys.INSTANCE_PLAYERS.with(instanceID), uuid);
-          resource.hdel(Keys.PLAYER_DATA.with(uuid), "server", "ip", "instance");
-          resource.hset(Keys.PLAYER_DATA.with(uuid), "lastOnline", String.valueOf(timestamp));
+        if (resource.sismember(Keys.INSTANCE_PLAYERS.with(instanceID), uuid.toString())) {
+          resource.srem(Keys.INSTANCE_PLAYERS.with(instanceID), uuid.toString());
+          resource.hdel(Keys.PLAYER_DATA.with(uuid.toString()), "server", "ip", "instance");
+          resource.hset(Keys.PLAYER_DATA.with(uuid.toString()), "lastOnline",
+                  String.valueOf(timestamp));
         }
 
         if (post) {
-          IntercomPayload payload = DisconnectData.craft(instanceID, UUID.fromString(uuid),
-                  timestamp);
-          resource.publish(Keys.CHANNEL_DATA.of(), platform.toJson(payload));
+          DisconnectPayload payload =  DisconnectPayload.of(instanceID, uuid, timestamp);
+
+          resource.publish(Keys.CHANNEL_DATA.of(), gson.toJson(payload));
         }
       } catch (JedisConnectionException exception) {
         // TODO: Notify console in a nicer way
@@ -107,9 +109,10 @@ public class DataHandler {
       resource.hset(Keys.PLAYER_DATA.with(user), "server", server);
 
       if (post) {
-        IntercomPayload payload = ServerChangeData.craft(instanceID, user, server, previousServer);
+       ServerChangePayload payload =  ServerChangePayload.of(instanceID, user.getUUID(), server,
+                previousServer);
 
-        resource.publish(Keys.CHANNEL_DATA.of(), platform.toJson(payload));
+       resource.publish(Keys.CHANNEL_DATA.of(), gson.toJson(payload));
       }
     }
   }
