@@ -2,6 +2,8 @@ package tech.tagline.trevor.api;
 
 import tech.tagline.trevor.api.data.User;
 
+import java.util.UUID;
+
 public enum Keys {
   CHANNEL_DATA("trevor:data"),
   CHANNEL_INSTANCE("trevor:{}"),
@@ -28,6 +30,10 @@ public enum Keys {
   }
 
   public String with(User user) {
-    return key.replace("{}", user.getUUID().toString());
+    return with(user.getUUID());
+  }
+
+  public String with(UUID uuid) {
+    return key.replace("{}", uuid.toString());
   }
 }

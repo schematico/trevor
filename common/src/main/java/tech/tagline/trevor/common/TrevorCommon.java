@@ -1,5 +1,6 @@
 package tech.tagline.trevor.common;
 
+import com.google.gson.Gson;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.exceptions.JedisConnectionException;
@@ -7,16 +8,22 @@ import tech.tagline.trevor.api.Keys;
 import tech.tagline.trevor.common.handler.DataHandler;
 import tech.tagline.trevor.common.handler.LogicHandler;
 import tech.tagline.trevor.common.handler.RedisMessageHandler;
+import tech.tagline.trevor.common.impl.TrevorApiImpl;
 import tech.tagline.trevor.common.platform.Platform;
 import tech.tagline.trevor.common.task.HeartbeatTask;
 
 import java.util.UUID;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public class TrevorCommon {
 
   private final Platform platform;
+
+  private ScheduledExecutorService executor;
+  private Gson gson;
 
   private JedisPool pool;
   private DataHandler dataHandler;
@@ -25,6 +32,8 @@ public class TrevorCommon {
 
   private Future<?> heartbeatTask;
   private Future<?> messageHandlerTask;
+
+  private TrevorApiImpl apiImpl;
 
   public TrevorCommon(Platform platform) {
     this.platform = platform;
@@ -35,9 +44,14 @@ public class TrevorCommon {
 
     this.pool = platform.getRedisConfiguration().create();
 
+    this.executor = Executors.newScheduledThreadPool(8);
+    this.gson = new Gson();
+
     this.dataHandler = new DataHandler(this);
     this.logicHandler = new LogicHandler(this);
     this.messageHandler = new RedisMessageHandler(this);
+
+    this.apiImpl = new TrevorApiImpl(this);
 
     return true;
   }
@@ -59,7 +73,7 @@ public class TrevorCommon {
         }
       }
 
-      this.heartbeatTask = DataHandler.executor.scheduleAtFixedRate(new HeartbeatTask(this),
+      this.heartbeatTask = executor.scheduleAtFixedRate(new HeartbeatTask(this),
               0, 5, TimeUnit.SECONDS);
     } catch (JedisConnectionException exception) {
       exception.printStackTrace();
@@ -69,7 +83,7 @@ public class TrevorCommon {
       return false;
     }
 
-    this.messageHandlerTask = DataHandler.executor.submit(messageHandler);
+    this.messageHandlerTask = executor.submit(messageHandler);
 
     return true;
   }
@@ -107,5 +121,17 @@ public class TrevorCommon {
 
   public LogicHandler getLogicHandler() {
     return logicHandler;
+  }
+
+  public Gson getGson() {
+    return gson;
+  }
+
+  public ScheduledExecutorService getExecutor() {
+    return executor;
+  }
+
+  public TrevorApiImpl getApiImpl() {
+    return apiImpl;
   }
 }

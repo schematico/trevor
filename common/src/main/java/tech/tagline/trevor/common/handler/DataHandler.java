@@ -19,10 +19,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class DataHandler {
 
-  public static final Gson gson = new Gson();
-  public final static ScheduledExecutorService executor =
-          Executors.newScheduledThreadPool(8);
-
   private final TrevorCommon common;
   private final Platform platform;
   private final String instanceID;
@@ -58,7 +54,7 @@ public class DataHandler {
   }
 
   public void create(User user, boolean post) {
-    executor.submit(() -> {
+    common.getExecutor().submit(() -> {
       try (Jedis resource = common.getPool().getResource()) {
         if (!resource.sismember(Keys.INSTANCE_PLAYERS.with(instanceID),
                 user.getUUID().toString())) {
@@ -72,7 +68,7 @@ public class DataHandler {
           ConnectPayload payload =  ConnectPayload.of(instanceID, user.getUUID(),
                   user.getAddress());
 
-          resource.publish(Keys.CHANNEL_DATA.of(), gson.toJson(payload));
+          resource.publish(Keys.CHANNEL_DATA.of(), common.getGson().toJson(payload));
         }
       } catch (JedisConnectionException exception) {
         // TODO: Notify console in a nicer way
@@ -82,7 +78,7 @@ public class DataHandler {
   }
 
   public void destroy(UUID uuid, boolean post) {
-    executor.submit(() -> {
+    common.getExecutor().submit(() -> {
       long timestamp = System.currentTimeMillis();
       try (Jedis resource = common.getPool().getResource()) {
         if (resource.sismember(Keys.INSTANCE_PLAYERS.with(instanceID), uuid.toString())) {
@@ -95,7 +91,7 @@ public class DataHandler {
         if (post) {
           DisconnectPayload payload =  DisconnectPayload.of(instanceID, uuid, timestamp);
 
-          resource.publish(Keys.CHANNEL_DATA.of(), gson.toJson(payload));
+          resource.publish(Keys.CHANNEL_DATA.of(), common.getGson().toJson(payload));
         }
       } catch (JedisConnectionException exception) {
         // TODO: Notify console in a nicer way
@@ -112,7 +108,7 @@ public class DataHandler {
        ServerChangePayload payload =  ServerChangePayload.of(instanceID, user.getUUID(), server,
                 previousServer);
 
-       resource.publish(Keys.CHANNEL_DATA.of(), gson.toJson(payload));
+       resource.publish(Keys.CHANNEL_DATA.of(), common.getGson().toJson(payload));
       }
     }
   }

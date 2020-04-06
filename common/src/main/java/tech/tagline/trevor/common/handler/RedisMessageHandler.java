@@ -53,7 +53,7 @@ public class RedisMessageHandler implements Runnable {
         public void onMessage(final String channel, final String message) {
           if (message.trim().length() > 0) {
             if (channel.equals(Keys.CHANNEL_DATA.of())) {
-              DataHandler.executor.submit(() -> {
+              common.getExecutor().submit(() -> {
                 try {
                   intercom(id, message);
                 } catch (Exception exception) {
@@ -61,7 +61,7 @@ public class RedisMessageHandler implements Runnable {
                 }
               });
             } else {
-              DataHandler.executor.submit(() ->
+              common.getExecutor().submit(() ->
                       common.getPlatform().getEventProcessor().onMessage(channel, message).post());
             }
           }
@@ -81,7 +81,7 @@ public class RedisMessageHandler implements Runnable {
     NetworkPayload.Content content = NetworkPayload.Content
             .valueOf(json.get("content").getAsString());
 
-    NetworkPayload payload = DataHandler.gson.fromJson(message, content.getContentClass());
+    NetworkPayload payload = common.getGson().fromJson(message, content.getContentClass());
     if (id.equals(payload.getSource())) {
       return;
     }
