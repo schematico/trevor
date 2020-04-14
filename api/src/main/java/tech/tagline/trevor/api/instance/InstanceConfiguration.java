@@ -1,4 +1,4 @@
-package tech.tagline.trevor.common.config;
+package tech.tagline.trevor.api.config;
 
 public class InstanceConfiguration {
 

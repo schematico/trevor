@@ -1,9 +1,13 @@
-package tech.tagline.trevor.common.config;
+package tech.tagline.trevor.common.api.database.redis;
 
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
+import tech.tagline.trevor.api.event.EventProcessor;
+import tech.tagline.trevor.api.data.InstanceData;
+import tech.tagline.trevor.common.api.database.DatabaseConfiguration;
+import tech.tagline.trevor.common.proxy.DatabaseProxy;
 
-public class RedisConfiguration {
+public class RedisConfiguration implements DatabaseConfiguration {
 
   private final String address;
   private final short port;
@@ -23,31 +27,14 @@ public class RedisConfiguration {
     this.timeout = timeout;
   }
 
-  public String getAddress() {
-    return address;
-  }
-
-  public short getPort() {
-    return port;
-  }
-
-  public int getMaxConnections() {
-    return maxConnections;
-  }
-
-  public boolean isUseSSL() {
-    return useSSL;
-  }
-
-  public int getTimeout() {
-    return timeout;
-  }
-
-  public JedisPool create() {
+  @Override
+  public RedisDatabase create(String instance, DatabaseProxy proxy, EventProcessor processor,
+                              InstanceData data) {
     JedisPoolConfig config = new JedisPoolConfig();
 
     config.setMaxTotal(maxConnections);
 
-    return new JedisPool(config, address, port, timeout, password);
+    return new RedisDatabase(instance, proxy, processor, data,
+            new JedisPool(config, address, port, timeout, password, useSSL));
   }
 }
