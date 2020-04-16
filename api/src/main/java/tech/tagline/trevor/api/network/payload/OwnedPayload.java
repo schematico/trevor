@@ -1,8 +1,8 @@
-package tech.tagline.trevor.api.data.payload;
+package tech.tagline.trevor.api.network.payload;
 
 import java.util.UUID;
 
-public class OwnedPayload extends NetworkPayload {
+public abstract class OwnedPayload extends NetworkPayload {
 
   private final UUID uuid;
 

@@ -1,27 +1,21 @@
 package tech.tagline.trevor.velocity;
 
-import com.google.gson.Gson;
 import com.google.inject.Inject;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.plugin.annotation.DataDirectory;
-import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import org.slf4j.Logger;
-import tech.tagline.trevor.api.event.NetworkConnectEvent;
 import tech.tagline.trevor.common.TrevorCommon;
 import tech.tagline.trevor.velocity.platform.VelocityListener;
 import tech.tagline.trevor.velocity.platform.VelocityPlatform;
-import tech.tagline.trevor.velocity.platform.event.VelocityNetworkConnectEvent;
 
 import java.nio.file.Path;
 
 @Plugin(id = "trevor")
 public class TrevorVelocity {
-
-  public static final Gson GSON = new Gson();
 
   private TrevorCommon trevor;
 

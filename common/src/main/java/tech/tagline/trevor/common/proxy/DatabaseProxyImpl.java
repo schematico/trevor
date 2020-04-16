@@ -1,102 +1,94 @@
 package tech.tagline.trevor.common.proxy;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import tech.tagline.trevor.api.data.Platform;
 import tech.tagline.trevor.api.data.User;
-import tech.tagline.trevor.api.data.payload.ConnectPayload;
-import tech.tagline.trevor.api.data.payload.DisconnectPayload;
-import tech.tagline.trevor.api.data.payload.ServerChangePayload;
 import tech.tagline.trevor.api.database.Database;
+import tech.tagline.trevor.api.database.DatabaseConnection;
+import tech.tagline.trevor.api.network.payload.ConnectPayload;
+import tech.tagline.trevor.api.network.payload.DisconnectPayload;
+import tech.tagline.trevor.api.network.payload.NetworkPayload;
+import tech.tagline.trevor.api.network.payload.ServerChangePayload;
+import tech.tagline.trevor.api.database.DatabaseProxy;
 import tech.tagline.trevor.common.TrevorCommon;
 
-import java.util.Optional;
+import java.util.concurrent.CompletionException;
 
-public class DatabaseProxy {
+public class DatabaseProxyImpl implements DatabaseProxy {
 
-  private final TrevorCommon common;
+  private final Platform platform;
+  private final Database database;
+  private final Gson gson;
 
-  public DatabaseProxy(TrevorCommon common) {
-    this.common = common;
+  private final String instance;
+
+  public DatabaseProxyImpl(Platform platform, Database database, Gson gson) {
+    this.platform = platform;
+    this.database = database;
+    this.gson = gson;
+
+    this.instance = platform.getInstanceConfiguration().getID();
   }
 
+  @Override
   public ConnectResult onPlayerConnect(User user) {
-    String instance = common.getPlatform().getInstanceConfiguration().getInstanceID();
     // TODO: Do something with this error
-    Database.Connection connection = common.getDatabase().open().exceptionally(ex -> null).join();
-    if (connection == null) {
-      return ConnectResult.deny("&cAn error occurred, please try again.");
-    }
+    try {
+      DatabaseConnection connection = database.open().join();
+      if (!connection.isOnline(user)) {
+        ConnectPayload payload = ConnectPayload.of(instance, user.getUUID(), user.getAddress());
 
-    if (connection.isOnline(user)) {
+        connection.create(user);
+        connection.publish(gson.toJson(payload));
+
+        return ConnectResult.allow();
+      }
       return ConnectResult.deny("&cYou are already logged in.");
+    } catch (CompletionException exception) {
+      exception.printStackTrace();
     }
-
-    ConnectPayload payload = ConnectPayload.of(instance, user.getUUID(), user.getAddress());
-
-    connection.create(user);
-    connection.publish(common.getGson().toJson(payload));
-
-    return ConnectResult.allow();
+    return ConnectResult.deny("&cAn error occurred, please try again.");
   }
 
+  @Override
   public void onPlayerDisconnect(User user) {
-    String instance = common.getPlatform().getInstanceConfiguration().getInstanceID();
-    // TODO: Do something with this error
     long timestamp = System.currentTimeMillis();
-    common.getDatabase().open().exceptionally(ex -> null).thenAcceptAsync(connection -> {
-      if (connection != null) {
-        DisconnectPayload payload = DisconnectPayload.of(instance, user.getUUID(), timestamp);
+    database.open().thenAccept(connection -> {
+      DisconnectPayload payload = DisconnectPayload.of(instance, user.getUUID(), timestamp);
 
-        connection.destroy(user.getUUID());
-        connection.publish(common.getGson().toJson(payload));
-      }
+      connection.destroy(user.getUUID());
+      connection.publish(gson.toJson(payload));
     });
   }
 
+  @Override
   public void onPlayerServerChange(User user, String server, String previousServer) {
-    String instance = common.getPlatform().getInstanceConfiguration().getInstanceID();
-    // TODO: Do something with this error
-   common.getDatabase().open().exceptionally(ex -> null).thenAcceptAsync(connection -> {
-     if (connection != null) {
-       ServerChangePayload payload =
-               ServerChangePayload.of(instance, user.getUUID(), server, previousServer);
+   database.open().thenAccept(connection -> {
+     ServerChangePayload payload =
+             ServerChangePayload.of(instance, user.getUUID(), server, previousServer);
 
-       connection.setServer(user, server);
-       connection.publish(common.getGson().toJson(payload));
-     }
+     connection.setServer(user, server);
+     connection.publish(gson.toJson(payload));
    });
   }
 
+  @Override
   public void onNetworkIntercom(String channel, String message) {
+    // TODO: Figure out why JsonParser#parseString() doesn't work since this method is deprecated
+    JsonObject json = new JsonParser().parse(message).getAsJsonObject();
 
-  }
+    String contentRaw = json.get("content").getAsString();
+    try {
+      NetworkPayload.Content content = NetworkPayload.Content.valueOf(contentRaw);
 
-  public static class ConnectResult {
-
-    private boolean allowed;
-    private String message;
-
-    public boolean isAllowed() {
-      return allowed;
-    }
-
-    public Optional<String> getMessage() {
-      return Optional.ofNullable(message);
-    }
-
-    public static ConnectResult allow() {
-      ConnectResult result = new ConnectResult();
-
-      result.allowed = true;
-
-      return result;
-    }
-
-    public static ConnectResult deny(String message) {
-      ConnectResult result = new ConnectResult();
-
-      result.allowed = false;
-      result.message = message;
-
-      return result;
+      NetworkPayload payload = gson.fromJson(message, content.getContentClass());
+      if (!instance.equals(payload.getSource())) {
+        payload.process(platform.getEventProcessor()).post();
+      }
+    } catch (IllegalArgumentException exception) {
+      exception.printStackTrace();
     }
   }
 }

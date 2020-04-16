@@ -1,14 +1,12 @@
 package tech.tagline.trevor.bungee.platform;
 
-import net.md_5.bungee.api.connection.Server;
-import tech.tagline.trevor.api.data.payload.ConnectPayload;
-import tech.tagline.trevor.api.data.payload.DisconnectPayload;
-import tech.tagline.trevor.api.data.payload.ServerChangePayload;
+import tech.tagline.trevor.api.network.payload.ConnectPayload;
+import tech.tagline.trevor.api.network.payload.DisconnectPayload;
+import tech.tagline.trevor.api.network.payload.ServerChangePayload;
 import tech.tagline.trevor.bungee.TrevorBungee;
 import tech.tagline.trevor.bungee.platform.event.*;
-import tech.tagline.trevor.api.event.EventProcessor;
+import tech.tagline.trevor.api.network.event.EventProcessor;
 
-import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 public class BungeeEventProcessor implements EventProcessor {
@@ -40,8 +38,8 @@ public class BungeeEventProcessor implements EventProcessor {
   }
 
   private <T extends BungeeNetworkEvent> EventAction<T> wrap(T event) {
-    return new EventAction<T>(event, e -> {
-      CompletableFuture<T> future = new CompletableFuture<T>();
+    return new EventAction<>(event, e -> {
+      CompletableFuture<T> future = new CompletableFuture<>();
 
       plugin.getProxy().getScheduler().runAsync(plugin, () -> {
         plugin.getProxy().getPluginManager().callEvent(e);

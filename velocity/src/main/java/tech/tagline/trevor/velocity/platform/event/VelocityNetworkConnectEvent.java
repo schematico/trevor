@@ -1,7 +1,7 @@
 package tech.tagline.trevor.velocity.platform.event;
 
-import tech.tagline.trevor.api.data.payload.ConnectPayload;
-import tech.tagline.trevor.api.event.NetworkConnectEvent;
+import tech.tagline.trevor.api.network.payload.ConnectPayload;
+import tech.tagline.trevor.api.network.event.NetworkConnectEvent;
 
 import java.util.UUID;
 

@@ -1,11 +1,8 @@
-package tech.tagline.trevor.api.event;
+package tech.tagline.trevor.api.network.event;
 
-import tech.tagline.trevor.api.data.payload.*;
-import tech.tagline.trevor.api.event.*;
+import tech.tagline.trevor.api.network.payload.*;
 
-import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 public interface EventProcessor {

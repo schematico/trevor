@@ -1,8 +1,9 @@
-package tech.tagline.trevor.api.data.payload;
+package tech.tagline.trevor.api.network.payload;
 
-import com.google.common.graph.Network;
+import tech.tagline.trevor.api.network.event.EventProcessor;
+import tech.tagline.trevor.api.network.event.NetworkEvent;
 
-public class NetworkPayload {
+public abstract class NetworkPayload {
 
   private final Content content;
   private final String source;
@@ -19,6 +20,8 @@ public class NetworkPayload {
   public String getSource() {
     return source;
   }
+
+  public abstract EventProcessor.EventAction<? extends NetworkEvent> process(EventProcessor processor);
 
   public enum Content {
     CONNECT(ConnectPayload.class),

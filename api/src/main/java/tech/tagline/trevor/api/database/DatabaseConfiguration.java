@@ -1,11 +1,9 @@
-package tech.tagline.trevor.common.api.database;
+package tech.tagline.trevor.api.database;
 
-import tech.tagline.trevor.api.event.EventProcessor;
-import tech.tagline.trevor.api.data.InstanceData;
-import tech.tagline.trevor.common.proxy.DatabaseProxy;
+import tech.tagline.trevor.api.data.Platform;
+import tech.tagline.trevor.api.instance.InstanceData;
 
 public interface DatabaseConfiguration {
 
-  Database create(String instance, DatabaseProxy proxy, EventProcessor processor,
-                  InstanceData data);
+  Database create(Platform platform, DatabaseProxy proxy, InstanceData data);
 }

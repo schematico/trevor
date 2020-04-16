@@ -22,12 +22,12 @@ public abstract class User {
     return address;
   }
 
-  public Map<String, String> toDatabaseMap(String instanceID) {
+  public Map<String, String> toDatabaseMap(String instance) {
     Map<String, String> data = new HashMap<>(4);
 
     data.put("lastOnline", "0");
     data.put("ip", address);
-    data.put("instance", instanceID);
+    data.put("instance", instance);
 
     return data;
   }

@@ -1,17 +1,14 @@
-package tech.tagline.trevor.common.platform;
+package tech.tagline.trevor.api.data;
 
-import tech.tagline.trevor.api.event.EventProcessor;
-import tech.tagline.trevor.common.api.config.InstanceConfiguration;
-import tech.tagline.trevor.common.api.database.DatabaseConfiguration;
-import tech.tagline.trevor.common.api.database.redis.RedisConfiguration;
+import tech.tagline.trevor.api.instance.InstanceConfiguration;
+import tech.tagline.trevor.api.database.DatabaseConfiguration;
+import tech.tagline.trevor.api.network.event.EventProcessor;
 
 public interface Platform {
 
   InstanceConfiguration getInstanceConfiguration();
 
   DatabaseConfiguration getDatabaseConfiguration();
-
-  RedisConfiguration getRedisConfiguration();
 
   EventProcessor getEventProcessor();
 

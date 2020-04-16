@@ -1,13 +1,11 @@
 package tech.tagline.trevor.velocity.platform;
 
-import tech.tagline.trevor.api.data.payload.ConnectPayload;
-import tech.tagline.trevor.api.data.payload.DisconnectPayload;
-import tech.tagline.trevor.api.data.payload.ServerChangePayload;
-import tech.tagline.trevor.api.event.EventProcessor;
+import tech.tagline.trevor.api.network.payload.ConnectPayload;
+import tech.tagline.trevor.api.network.payload.DisconnectPayload;
+import tech.tagline.trevor.api.network.payload.ServerChangePayload;
+import tech.tagline.trevor.api.network.event.EventProcessor;
 import tech.tagline.trevor.velocity.TrevorVelocity;
 import tech.tagline.trevor.velocity.platform.event.*;
-
-import java.util.UUID;
 
 public class VelocityEventProcessor implements EventProcessor {
 
@@ -38,6 +36,6 @@ public class VelocityEventProcessor implements EventProcessor {
   }
 
   private <T extends VelocityNetworkEvent> EventAction<T> wrap(T event) {
-    return new EventAction<T>(event, plugin.getProxy().getEventManager()::fire);
+    return new EventAction<>(event, plugin.getProxy().getEventManager()::fire);
   }
 }

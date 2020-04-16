@@ -1,30 +1,27 @@
 package tech.tagline.trevor.common;
 
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.exceptions.JedisConnectionException;
-import tech.tagline.trevor.api.Keys;
-import tech.tagline.trevor.common.handler.DataHandler;
-import tech.tagline.trevor.common.handler.LogicHandler;
-import tech.tagline.trevor.common.handler.RedisMessageHandler;
-import tech.tagline.trevor.common.platform.Platform;
-import tech.tagline.trevor.common.task.HeartbeatTask;
+import com.google.gson.Gson;
+import tech.tagline.trevor.api.database.DatabaseConnection;
+import tech.tagline.trevor.api.network.payload.DisconnectPayload;
+import tech.tagline.trevor.api.instance.InstanceData;
+import tech.tagline.trevor.api.database.Database;
+import tech.tagline.trevor.common.proxy.DatabaseProxyImpl;
+import tech.tagline.trevor.api.data.Platform;
 
 import java.util.UUID;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 public class TrevorCommon {
 
   private final Platform platform;
 
-  private JedisPool pool;
-  private DataHandler dataHandler;
-  private LogicHandler logicHandler;
-  private RedisMessageHandler messageHandler;
+  private ScheduledExecutorService executor;
+  private Gson gson;
 
-  private Future<?> heartbeatTask;
-  private Future<?> messageHandlerTask;
+  private Database database;
+  private DatabaseProxyImpl proxy;
+
+  private InstanceData data;
 
   public TrevorCommon(Platform platform) {
     this.platform = platform;
@@ -33,79 +30,65 @@ public class TrevorCommon {
   public boolean load() {
     // TODO: Verify instance configuration values before pool creation
 
-    this.pool = platform.getRedisConfiguration().create();
+    this.executor = Executors.newScheduledThreadPool(8);
+    this.gson = new Gson();
 
-    this.dataHandler = new DataHandler(this);
-    this.logicHandler = new LogicHandler(this);
-    this.messageHandler = new RedisMessageHandler(this);
+    this.data = new InstanceData();
+
+    this.database = platform.getDatabaseConfiguration().create(platform, proxy, data);
+
+    this.proxy = new DatabaseProxyImpl(platform, database, gson);
 
     return true;
   }
 
   public boolean start() {
-    String instanceID = platform.getInstanceConfiguration().getInstanceID();
-    long timestamp = System.currentTimeMillis();
+    database.init();
 
     // Test connection and perform heartbeat
-    try (Jedis resource = pool.getResource()) {
-      resource.ping();
-
-      // Make sure another instance isn't running with the same ID
-      if (resource.hexists(Keys.DATABASE_HEARTBEAT.of(), instanceID)) {
-        long lastBeat = Long.parseLong(resource.hget(Keys.DATABASE_HEARTBEAT.of(), instanceID));
-        if (timestamp < lastBeat + 20) {
-          // TODO: Shutdown and inform console
-          return false;
-        }
-      }
-
-      this.heartbeatTask = DataHandler.executor.scheduleAtFixedRate(new HeartbeatTask(this),
-              0, 5, TimeUnit.SECONDS);
-    } catch (JedisConnectionException exception) {
-      exception.printStackTrace();
-
-      pool.destroy();
-
+    DatabaseConnection connection = database.open().join();
+    if (connection.isInstanceAlive()) {
+      // TODO: Shutdown and inform console
       return false;
     }
 
-    this.messageHandlerTask = DataHandler.executor.submit(messageHandler);
+    database.init();
 
     return true;
   }
 
   public boolean stop() {
-    if (pool != null) {
-      heartbeatTask.cancel(true);
-      messageHandlerTask.cancel(true);
+    if (database != null) {
+      DatabaseConnection connection = database.open().join();
 
-      messageHandler.destroy();
+      connection.deleteHeartbeat();
 
-      String instanceID = platform.getInstanceConfiguration().getInstanceID();
-      try (Jedis resource = pool.getResource()) {
-        resource.hdel("heartbeat", instanceID);
-        if (resource.scard(Keys.INSTANCE_PLAYERS.with(instanceID)) > 0) {
-          resource.smembers(Keys.INSTANCE_PLAYERS.with(instanceID))
-                  .forEach(uuid -> dataHandler.destroy(UUID.fromString(uuid), true));
-        }
+      if (connection.getNetworkPlayerCount() > 0) {
+        connection.getNetworkPlayers().forEach(uuid -> {
+          DisconnectPayload payload = connection.destroy(UUID.fromString(uuid));
+
+          connection.publish(gson.toJson(payload));
+        });
       }
+
+      database.kill();
     }
     return true;
   }
 
-  public DataHandler getDataHandler() {
-    return dataHandler;
+  public InstanceData getInstanceData() {
+    return data;
   }
 
   public Platform getPlatform() {
     return platform;
   }
 
-  public JedisPool getPool() {
-    return pool;
+  public Database getDatabase() {
+    return database;
   }
 
-  public LogicHandler getLogicHandler() {
-    return logicHandler;
+  public DatabaseProxyImpl getDatabaseProxy() {
+    return proxy;
   }
 }

@@ -1,7 +1,7 @@
 package tech.tagline.trevor.velocity.platform.event;
 
-import tech.tagline.trevor.api.data.payload.ServerChangePayload;
-import tech.tagline.trevor.api.event.NetworkServerChangeEvent;
+import tech.tagline.trevor.api.network.payload.ServerChangePayload;
+import tech.tagline.trevor.api.network.event.NetworkServerChangeEvent;
 
 import java.util.UUID;
 

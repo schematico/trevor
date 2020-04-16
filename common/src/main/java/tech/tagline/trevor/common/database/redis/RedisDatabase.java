@@ -1,34 +1,33 @@
-package tech.tagline.trevor.common.api.database.redis;
+package tech.tagline.trevor.common.database.redis;
 
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.exceptions.JedisConnectionException;
-import tech.tagline.trevor.api.event.EventProcessor;
-import tech.tagline.trevor.api.data.InstanceData;
-import tech.tagline.trevor.common.api.database.Database;
-import tech.tagline.trevor.common.proxy.DatabaseProxy;
-import tech.tagline.trevor.common.task.HeartbeatTask;
+import tech.tagline.trevor.api.data.Platform;
+import tech.tagline.trevor.api.database.Database;
+import tech.tagline.trevor.api.database.DatabaseConnection;
+import tech.tagline.trevor.api.database.DatabaseIntercom;
+import tech.tagline.trevor.api.database.DatabaseProxy;
+import tech.tagline.trevor.api.network.event.EventProcessor;
+import tech.tagline.trevor.api.instance.InstanceData;
 
 import java.util.concurrent.*;
 
 public class RedisDatabase implements Database {
 
-  private final String instance;
+  private final Platform platform;
   private final DatabaseProxy proxy;
-  private final EventProcessor processor;
   private final InstanceData data;
   private final JedisPool pool;
   private final ScheduledExecutorService executor;
 
-  private Intercom intercom;
+  private RedisIntercom intercom;
   private Future<?> intercomTask;
   private Future<?> heartbeatTask;
 
-  public RedisDatabase(String instance, DatabaseProxy proxy, EventProcessor processor,
-                       InstanceData data, JedisPool pool) {
-    this.instance = instance;
+  public RedisDatabase(Platform platform, DatabaseProxy proxy, InstanceData data, JedisPool pool) {
+    this.platform = platform;
     this.proxy = proxy;
-    this.processor = processor;
     this.data = data;
     this.pool = pool;
     this.executor = Executors.newScheduledThreadPool(8);
@@ -36,20 +35,30 @@ public class RedisDatabase implements Database {
 
   @Override
   public void init() {
-    this.intercom = new RedisIntercom(this, proxy, processor);
+    this.intercom = new RedisIntercom(platform, this,  proxy);
 
     this.intercomTask = executor.submit(intercom);
 
-    this.heartbeatTask = executor.submit(new HeartbeatTask(this, data));
+    this.heartbeatTask =
+            executor.scheduleAtFixedRate(this::beat, 0,5, TimeUnit.SECONDS);
   }
 
   @Override
-  public CompletableFuture<Connection> open() {
-    CompletableFuture<Connection> future = new CompletableFuture<>();
+  public void beat() {
+    open().thenAccept(connection -> {
+      connection.beat();
+
+      connection.update(data);
+    });
+  }
+
+  @Override
+  public CompletableFuture<DatabaseConnection> open() {
+    CompletableFuture<DatabaseConnection> future = new CompletableFuture<>();
 
     executor.submit(() -> {
       try (Jedis resource = pool.getResource()) {
-        future.complete(new RedisConnection(instance, resource));
+        future.complete(new RedisConnection(platform.getInstanceConfiguration().getID(), resource));
       } catch (JedisConnectionException exception) {
         future.completeExceptionally(exception);
       }
@@ -59,7 +68,7 @@ public class RedisDatabase implements Database {
   }
 
   @Override
-  public Database.Intercom getIntercom() {
+  public DatabaseIntercom getIntercom() {
     return intercom;
   }
 

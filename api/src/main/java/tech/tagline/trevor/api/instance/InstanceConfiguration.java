@@ -1,14 +1,14 @@
-package tech.tagline.trevor.api.config;
+package tech.tagline.trevor.api.instance;
 
 public class InstanceConfiguration {
 
-  private final String instanceID;
+  private final String id;
 
-  public InstanceConfiguration(String instanceID) {
-    this.instanceID = instanceID;
+  public InstanceConfiguration(String id) {
+    this.id = id;
   }
 
-  public String getInstanceID() {
-    return instanceID;
+  public String getID() {
+    return id;
   }
 }

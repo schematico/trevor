@@ -1,4 +1,4 @@
-package tech.tagline.trevor.api.data;
+package tech.tagline.trevor.api.instance;
 
 import java.util.ArrayList;
 import java.util.List;

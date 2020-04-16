@@ -2,13 +2,15 @@ package tech.tagline.trevor.velocity.platform;
 
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.yaml.YAMLConfigurationLoader;
-import tech.tagline.trevor.common.config.InstanceConfiguration;
-import tech.tagline.trevor.common.config.RedisConfiguration;
-import tech.tagline.trevor.api.event.EventProcessor;
-import tech.tagline.trevor.common.platform.Platform;
-import tech.tagline.trevor.common.util.FileIO;
+import tech.tagline.trevor.api.instance.InstanceConfiguration;
+import tech.tagline.trevor.api.database.DatabaseConfiguration;
+import tech.tagline.trevor.common.database.redis.RedisConfiguration;
+import tech.tagline.trevor.api.network.event.EventProcessor;
+import tech.tagline.trevor.api.data.Platform;
+import tech.tagline.trevor.api.util.FileIO;
 import tech.tagline.trevor.velocity.TrevorVelocity;
 
+import javax.security.auth.login.Configuration;
 import java.io.File;
 import java.io.IOException;
 
@@ -16,56 +18,27 @@ public class VelocityPlatform implements Platform {
 
   private final TrevorVelocity plugin;
 
-  private File folder;
-  private File file;
-  private ConfigurationNode config;
+  private ConfigurationNode fileConfiguration;
+  private InstanceConfiguration instanceConfiguration;
+  private DatabaseConfiguration databaseConfiguration;
 
   private VelocityEventProcessor eventProcessor;
-  private InstanceConfiguration instanceConfiguration;
-  private RedisConfiguration redisConfiguration;
 
   public VelocityPlatform(TrevorVelocity plugin) {
     this.plugin = plugin;
   }
 
   public boolean init() {
-    this.folder = plugin.getDataFolder().toFile();
-    this.file = new File(folder, "config.yml");
-
-    FileIO.create(folder, true);
-    FileIO.create(file, false);
-
-    try {
-      this.config = YAMLConfigurationLoader.builder().setFile(file).build().load();
-    } catch (IOException exception) {
-      exception.printStackTrace();
+    createFileConfiguration();
+    if (fileConfiguration == null) {
       return false;
     }
 
+    createInstanceConfig(fileConfiguration.getNode("instance"));
+    createDatabaseConfig(fileConfiguration.getNode("redis"));
+
     this.eventProcessor = new VelocityEventProcessor(plugin);
 
-    instance : {
-      ConfigurationNode section = config.getNode("instance");
-
-      String instanceID = section.getNode("id").getString();
-
-      this.instanceConfiguration = new InstanceConfiguration(instanceID);
-    }
-
-    redis : {
-      ConfigurationNode section = config.getNode("redis");
-
-      String address = section.getNode("address").getString();
-      short port = (short) section.getNode("port").getInt();
-      String password = section.getNode("password").getString();
-      int maxConnections = section.getNode("max-connections").getInt();
-      int timeout = section.getNode("timeout").getInt();
-      boolean useSSL = section.getNode("use-ssl").getBoolean();
-
-      this.redisConfiguration = new RedisConfiguration(address, port, password, maxConnections,
-              useSSL,
-              timeout);
-    }
     return true;
   }
 
@@ -75,8 +48,8 @@ public class VelocityPlatform implements Platform {
   }
 
   @Override
-  public RedisConfiguration getRedisConfiguration() {
-    return redisConfiguration;
+  public DatabaseConfiguration getDatabaseConfiguration() {
+    return databaseConfiguration;
   }
 
   @Override
@@ -97,5 +70,37 @@ public class VelocityPlatform implements Platform {
     }
 
     plugin.getLogger().info(message);
+  }
+
+  private void createFileConfiguration() {
+    File folder = plugin.getDataFolder().toFile();
+    File file = new File(folder, "config.yml");
+
+    FileIO.create(folder, true);
+    FileIO.create(file, false);
+
+    try {
+      this.fileConfiguration = YAMLConfigurationLoader.builder().setFile(file).build().load();
+    } catch (IOException exception) {
+      exception.printStackTrace();
+    }
+  }
+
+  private void createInstanceConfig(ConfigurationNode node) {
+    String id = node.getNode("id").getString();
+
+    this.instanceConfiguration = new InstanceConfiguration(id);
+  }
+
+  private void createDatabaseConfig(ConfigurationNode node) {
+    String address = node.getNode("address").getString();
+    short port = (short) node.getNode("port").getInt();
+    String password = node.getNode("password").getString();
+    int maxConnections = node.getNode("max-connections").getInt();
+    int timeout = node.getNode("timeout").getInt();
+    boolean useSSL = node.getNode("use-ssl").getBoolean();
+
+    this.databaseConfiguration =
+            new RedisConfiguration(address, port, password, maxConnections, useSSL, timeout);
   }
 }

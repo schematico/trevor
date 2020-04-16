@@ -1,49 +1,73 @@
-package tech.tagline.trevor.common.api.database.redis;
+package tech.tagline.trevor.common.database.redis;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.google.common.collect.Sets;
+import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPubSub;
-import tech.tagline.trevor.api.Keys;
-import tech.tagline.trevor.api.data.payload.ConnectPayload;
-import tech.tagline.trevor.api.data.payload.DisconnectPayload;
-import tech.tagline.trevor.api.data.payload.NetworkPayload;
-import tech.tagline.trevor.api.data.payload.ServerChangePayload;
-import tech.tagline.trevor.api.event.EventProcessor;
-import tech.tagline.trevor.common.TrevorCommon;
-import tech.tagline.trevor.common.api.database.Database;
-import tech.tagline.trevor.common.proxy.DatabaseProxy;
+import tech.tagline.trevor.api.data.Platform;
+import tech.tagline.trevor.api.util.Keys;
+import tech.tagline.trevor.api.database.DatabaseIntercom;
+import tech.tagline.trevor.api.database.DatabaseProxy;
 
-public class RedisIntercom implements Database.Intercom {
+import java.util.Arrays;
+import java.util.Set;
 
-  private final Database database;
+public class RedisIntercom extends JedisPubSub implements DatabaseIntercom {
+
+  private final Platform platform;
+  private final RedisDatabase database;
   private final DatabaseProxy proxy;
-  private final EventProcessor processor;
 
-  private JedisPubSub pipeline;
+  private final String instance;
 
-  public RedisIntercom(Database database, DatabaseProxy proxy, EventProcessor processor) {
+  private Set<String> channels = Sets.newHashSet();
+
+  public RedisIntercom(Platform platform, RedisDatabase database, DatabaseProxy proxy) {
+    this.platform = platform;
     this.database = database;
     this.proxy = proxy;
-    this.processor = processor;
+
+    this.instance = platform.getInstanceConfiguration().getID();
   }
 
   @Override
   public void run() {
     database.open().thenAccept(connection -> {
-      this.pipeline = new JedisPubSub() {
-        @Override
-        public void onMessage(final String channel, final String message) {
-          database.getExecutor().submit(() -> {
-            if (message.trim().length() > 0) {
-              if (channel.equals(Keys.CHANNEL_DATA.of())) {
-                proxy.onNetworkIntercom(channel, message);
-              } else {
-                processor.onMessage(channel, message).post();
-              }
-            }
-          });
+      channels.add(Keys.CHANNEL_INSTANCE.with(instance));
+      channels.add(Keys.CHANNEL_SERVERS.of());
+      channels.add(Keys.CHANNEL_DATA.of());
+
+      Jedis jedis = ((RedisConnection) connection).getConnection();
+
+      jedis.subscribe(this, channels.toArray(new String[0]));
+    });
+  }
+
+  public void add(String... channel) {
+    channels.addAll(Arrays.asList(channel));
+    super.subscribe(channels.toArray(new String[0]));
+  }
+
+  public void remove(String... channel) {
+    channels.removeAll(Arrays.asList(channel));
+    super.unsubscribe(channel);
+  }
+
+  public void destroy() {
+    channels.forEach(super::unsubscribe);
+    channels.clear();
+  }
+
+  @Override
+  public void handle(String channel, String message) {
+    database.getExecutor().submit(() -> {
+      if (message.trim().length() > 0) {
+        if (channel.equals(Keys.CHANNEL_DATA.of())) {
+          platform.log(message);
+          proxy.onNetworkIntercom(channel, message);
+        } else {
+          platform.getEventProcessor().onMessage(channel, message).post();
         }
-      };
+      }
     });
   }
 }

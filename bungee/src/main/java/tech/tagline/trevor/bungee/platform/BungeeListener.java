@@ -7,12 +7,11 @@ import net.md_5.bungee.api.connection.PendingConnection;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.LoginEvent;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
-import net.md_5.bungee.api.event.PostLoginEvent;
 import net.md_5.bungee.api.event.ServerConnectedEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 import tech.tagline.trevor.bungee.TrevorBungee;
-import tech.tagline.trevor.common.handler.LogicHandler;
+import tech.tagline.trevor.common.proxy.DatabaseProxyImpl;
 
 public class BungeeListener implements Listener {
 
@@ -30,7 +29,8 @@ public class BungeeListener implements Listener {
     BungeeUser user = new BungeeUser(connection.getUniqueId(),
             connection.getVirtualHost().getAddress().toString());
 
-    LogicHandler.ConnectResult result = plugin.getTrevor().getLogicHandler().onPlayerConnect(user);
+    DatabaseProxyImpl.ConnectResult result = plugin.getTrevor()
+            .getDatabaseProxy().onPlayerConnect(user);
 
     if (!result.isAllowed()) {
       event.setCancelled(true);
@@ -42,10 +42,9 @@ public class BungeeListener implements Listener {
   public void onPlayerDisconnect(PlayerDisconnectEvent event) {
     ProxiedPlayer player = event.getPlayer();
     // TODO: Maybe keep a map of platform users
-    BungeeUser user = new BungeeUser(player.getUniqueId(),
-            player.getPendingConnection().getVirtualHost().getAddress().toString());
+    BungeeUser user = new BungeeUser(player);
 
-    plugin.getTrevor().getLogicHandler().onPlayerDisconnect(user);
+    plugin.getTrevor().getDatabaseProxy().onPlayerDisconnect(user);
   }
 
   @EventHandler
@@ -58,10 +57,9 @@ public class BungeeListener implements Listener {
     }
 
     // TODO: Maybe keep a map of platform users
-    BungeeUser user = new BungeeUser(player.getUniqueId(),
-            player.getPendingConnection().getVirtualHost().getAddress().toString());
+    BungeeUser user = new BungeeUser(player);
 
-    plugin.getTrevor().getLogicHandler().onPlayerServerChange(user, server, previousServer);
+    plugin.getTrevor().getDatabaseProxy().onPlayerServerChange(user, server, previousServer);
   }
 
   private BaseComponent[] serialize(String text) {

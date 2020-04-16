@@ -1,18 +1,18 @@
-package tech.tagline.trevor.common.api.database.redis;
+package tech.tagline.trevor.common.database.redis;
 
 import com.google.common.collect.ImmutableList;
 import redis.clients.jedis.Jedis;
-import tech.tagline.trevor.api.Keys;
+import tech.tagline.trevor.api.util.Keys;
 import tech.tagline.trevor.api.data.User;
-import tech.tagline.trevor.api.data.payload.DisconnectPayload;
-import tech.tagline.trevor.common.api.database.Database;
-import tech.tagline.trevor.api.data.InstanceData;
+import tech.tagline.trevor.api.database.DatabaseConnection;
+import tech.tagline.trevor.api.network.payload.DisconnectPayload;
+import tech.tagline.trevor.api.instance.InstanceData;
 
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-public class RedisConnection implements Database.Connection {
+public class RedisConnection implements DatabaseConnection {
 
   private final String instance;
   private final Jedis connection;
@@ -22,13 +22,21 @@ public class RedisConnection implements Database.Connection {
     this.connection = connection;
   }
 
+  public Jedis getConnection() {
+    return connection;
+  }
+
   @Override
-  public void beat(long timestamp) {
+  public void beat() {
+    long timestamp = System.currentTimeMillis();
+
     connection.hset(Keys.DATABASE_HEARTBEAT.of(), instance, String.valueOf(timestamp));
   }
 
   @Override
-  public void update(long timestamp, InstanceData data) {
+  public void update(InstanceData data) {
+    long timestamp = System.currentTimeMillis();
+
     ImmutableList.Builder<String> builder = ImmutableList.builder();
     int playerCount = 0;
 
@@ -74,16 +82,17 @@ public class RedisConnection implements Database.Connection {
 
   @Override
   public void setServer(User user, String server) {
-    connection.set(Keys.PLAYER_DATA.with(user), "server");
+    connection.hset(Keys.PLAYER_DATA.with(user), "server", server);
   }
 
   @Override
   public boolean isOnline(User user) {
-    return connection.hexists(Keys.PLAYER_DATA.with(user), "instance");
+    return connection.sismember(Keys.INSTANCE_PLAYERS.with(instance), user.getUUID().toString());
   }
 
   @Override
-  public boolean isInstanceAlive(long timestamp) {
+  public boolean isInstanceAlive() {
+    long timestamp = System.currentTimeMillis();
     if (connection.hexists(Keys.DATABASE_HEARTBEAT.of(), instance)) {
       long lastBeat = Long.parseLong(connection.hget(Keys.DATABASE_HEARTBEAT.of(), instance));
       // TODO: Shutdown and inform console

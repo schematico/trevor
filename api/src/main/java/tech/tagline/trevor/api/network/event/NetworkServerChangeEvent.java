@@ -1,4 +1,4 @@
-package tech.tagline.trevor.api.event;
+package tech.tagline.trevor.api.network.event;
 
 import java.util.UUID;
 

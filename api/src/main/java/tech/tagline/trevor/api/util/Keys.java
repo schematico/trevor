@@ -1,4 +1,4 @@
-package tech.tagline.trevor.api;
+package tech.tagline.trevor.api.util;
 
 import tech.tagline.trevor.api.data.User;
 

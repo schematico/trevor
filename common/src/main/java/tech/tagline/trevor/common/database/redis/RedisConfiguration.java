@@ -1,11 +1,12 @@
-package tech.tagline.trevor.common.api.database.redis;
+package tech.tagline.trevor.common.database.redis;
 
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
-import tech.tagline.trevor.api.event.EventProcessor;
-import tech.tagline.trevor.api.data.InstanceData;
-import tech.tagline.trevor.common.api.database.DatabaseConfiguration;
-import tech.tagline.trevor.common.proxy.DatabaseProxy;
+import tech.tagline.trevor.api.data.Platform;
+import tech.tagline.trevor.api.database.DatabaseConfiguration;
+import tech.tagline.trevor.api.database.DatabaseProxy;
+import tech.tagline.trevor.api.network.event.EventProcessor;
+import tech.tagline.trevor.api.instance.InstanceData;
 
 public class RedisConfiguration implements DatabaseConfiguration {
 
@@ -28,13 +29,13 @@ public class RedisConfiguration implements DatabaseConfiguration {
   }
 
   @Override
-  public RedisDatabase create(String instance, DatabaseProxy proxy, EventProcessor processor,
-                              InstanceData data) {
+  public RedisDatabase create(Platform platform, DatabaseProxy proxy, InstanceData data) {
     JedisPoolConfig config = new JedisPoolConfig();
 
     config.setMaxTotal(maxConnections);
 
-    return new RedisDatabase(instance, proxy, processor, data,
-            new JedisPool(config, address, port, timeout, password, useSSL));
+    JedisPool pool = new JedisPool(config, address, port, timeout, password, useSSL);
+
+    return new RedisDatabase(platform, proxy, data, pool);
   }
 }

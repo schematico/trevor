@@ -8,7 +8,7 @@ import com.velocitypowered.api.event.player.ServerConnectedEvent;
 import com.velocitypowered.api.proxy.Player;
 import net.kyori.text.Component;
 import net.kyori.text.serializer.legacy.LegacyComponentSerializer;
-import tech.tagline.trevor.common.handler.LogicHandler;
+import tech.tagline.trevor.common.proxy.DatabaseProxyImpl;
 import tech.tagline.trevor.velocity.TrevorVelocity;
 
 public class VelocityListener {
@@ -24,10 +24,10 @@ public class VelocityListener {
     Player player = event.getPlayer();
 
     // TODO: Maybe keep a map of platform users
-    VelocityUser user = new VelocityUser(player.getUniqueId(),
-            player.getRemoteAddress().getAddress().toString());
+    VelocityUser user = new VelocityUser(player);
 
-    LogicHandler.ConnectResult result = plugin.getTrevor().getLogicHandler().onPlayerConnect(user);
+    DatabaseProxyImpl.ConnectResult result =
+            plugin.getTrevor().getDatabaseProxy().onPlayerConnect(user);
 
     if (!result.isAllowed()) {
       event.setResult(
@@ -39,10 +39,9 @@ public class VelocityListener {
   public void onPlayerDisconnect(DisconnectEvent event) {
     Player player = event.getPlayer();
     // TODO: Maybe keep a map of platform users
-    VelocityUser user = new VelocityUser(player.getUniqueId(),
-            player.getRemoteAddress().getAddress().toString());
+    VelocityUser user = new VelocityUser(player);
 
-    plugin.getTrevor().getLogicHandler().onPlayerDisconnect(user);
+    plugin.getTrevor().getDatabaseProxy().onPlayerDisconnect(user);
   }
 
   @Subscribe
@@ -55,10 +54,9 @@ public class VelocityListener {
 
     Player player = event.getPlayer();
     // TODO: Maybe keep a map of platform users
-    VelocityUser user = new VelocityUser(player.getUniqueId(),
-            player.getRemoteAddress().getAddress().toString());
+    VelocityUser user = new VelocityUser(player);
 
-    plugin.getTrevor().getLogicHandler().onPlayerServerChange(user, server, previousServer);
+    plugin.getTrevor().getDatabaseProxy().onPlayerServerChange(user, server, previousServer);
   }
 
   private Component serialize(String text) {

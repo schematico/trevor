@@ -1,4 +1,7 @@
-package tech.tagline.trevor.api.data.payload;
+package tech.tagline.trevor.api.network.payload;
+
+import tech.tagline.trevor.api.network.event.EventProcessor;
+import tech.tagline.trevor.api.network.event.NetworkServerChangeEvent;
 
 import java.util.UUID;
 
@@ -20,6 +23,11 @@ public class ServerChangePayload extends OwnedPayload {
 
   public String getPreviousServer() {
     return previousServer;
+  }
+
+  @Override
+  public EventProcessor.EventAction<NetworkServerChangeEvent> process(EventProcessor processor) {
+    return processor.onServerChange(this);
   }
 
   public static ServerChangePayload of(String source, UUID uuid, String server,
