@@ -1,6 +1,6 @@
 package tech.tagline.trevor.velocity.platform.event;
 
-import tech.tagline.trevor.api.event.NetworkIntercomEvent;
+import tech.tagline.trevor.api.network.event.NetworkIntercomEvent;
 
 public class VelocityNetworkMessageEvent extends VelocityNetworkEvent implements NetworkIntercomEvent {
 

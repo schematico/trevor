@@ -1,7 +1,7 @@
 package tech.tagline.trevor.bungee.platform.event;
 
-import tech.tagline.trevor.api.data.payload.DisconnectPayload;
-import tech.tagline.trevor.api.event.NetworkDisconnectEvent;
+import tech.tagline.trevor.api.network.payload.DisconnectPayload;
+import tech.tagline.trevor.api.network.event.NetworkDisconnectEvent;
 
 import java.util.UUID;
 
