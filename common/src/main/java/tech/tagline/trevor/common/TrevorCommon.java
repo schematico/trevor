@@ -15,7 +15,6 @@ public class TrevorCommon {
 
   private final Platform platform;
 
-  private ScheduledExecutorService executor;
   private Gson gson;
 
   private Database database;
@@ -30,7 +29,6 @@ public class TrevorCommon {
   public boolean load() {
     // TODO: Verify instance configuration values before pool creation
 
-    this.executor = Executors.newScheduledThreadPool(8);
     this.gson = new Gson();
 
     this.data = new InstanceData();

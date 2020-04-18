@@ -39,11 +39,17 @@ public class TrevorVelocity {
 
     platform.init();
 
-    trevor.load();
+    if (!trevor.load()) {
+      platform.log("Trevor failed to load... Shutting down.");
+      return;
+    }
 
     proxy.getEventManager().register(this, new VelocityListener(this));
 
-    trevor.start();
+    if (!trevor.start()) {
+      platform.log("Trevor failed to start... Shutting down.");
+      return;
+    }
   }
 
   @Subscribe
