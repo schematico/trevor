@@ -7,6 +7,4 @@ public interface DatabaseIntercom extends Runnable {
   void remove(String... channel);
 
   void destroy();
-
-  void handle(String channel, String message);
 }

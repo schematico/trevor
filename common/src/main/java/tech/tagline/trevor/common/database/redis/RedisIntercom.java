@@ -58,11 +58,10 @@ public class RedisIntercom extends JedisPubSub implements DatabaseIntercom {
   }
 
   @Override
-  public void handle(String channel, String message) {
+  public void onMessage(String channel, String message) {
     database.getExecutor().submit(() -> {
       if (message.trim().length() > 0) {
         if (channel.equals(Keys.CHANNEL_DATA.of())) {
-          platform.log(message);
           proxy.onNetworkIntercom(channel, message);
         } else {
           platform.getEventProcessor().onMessage(channel, message).post();
