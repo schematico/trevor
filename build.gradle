@@ -21,7 +21,7 @@ allprojects {
         // Library versions
         gsonVersion = "2.8.6"
         guavaVersion = "28.2-jre"
-        jedisVersion = '3.2.0-SNAPSHOT'
+        jedisVersion = '3.2.0'
 
         // Platform versions
 		bungeeVersion = '1.15-SNAPSHOT'
