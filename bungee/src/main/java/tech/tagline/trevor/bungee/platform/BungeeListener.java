@@ -36,7 +36,7 @@ public class BungeeListener implements Listener {
 
     if (!result.isAllowed()) {
       event.setCancelled(true);
-      event.setCancelReason(serialize(result.getMessage().get()));
+      event.setCancelReason(serialize(result.getMessage().orElse("")));
     }
   }
 

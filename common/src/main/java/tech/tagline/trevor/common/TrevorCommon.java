@@ -9,11 +9,11 @@ import tech.tagline.trevor.common.proxy.DatabaseProxyImpl;
 import tech.tagline.trevor.api.data.Platform;
 
 import java.util.UUID;
-import java.util.concurrent.*;
 
 public class TrevorCommon {
 
   private final Platform platform;
+  private final String instance;
 
   private Gson gson;
 
@@ -24,6 +24,7 @@ public class TrevorCommon {
 
   public TrevorCommon(Platform platform) {
     this.platform = platform;
+    this.instance = platform.getInstanceConfiguration().getID();
   }
 
   public boolean load() {
@@ -46,7 +47,7 @@ public class TrevorCommon {
     // Test connection and perform heartbeat
     DatabaseConnection connection = database.open().join();
     if (connection.isInstanceAlive()) {
-      // TODO: Shutdown and inform console
+      platform.log("Duplicate instance detected with instance id: {0}", instance);
       return false;
     }
 

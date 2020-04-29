@@ -8,7 +8,6 @@ import tech.tagline.trevor.api.database.Database;
 import tech.tagline.trevor.api.database.DatabaseConnection;
 import tech.tagline.trevor.api.database.DatabaseIntercom;
 import tech.tagline.trevor.api.database.DatabaseProxy;
-import tech.tagline.trevor.api.network.event.EventProcessor;
 import tech.tagline.trevor.api.instance.InstanceData;
 
 import java.util.concurrent.*;

@@ -12,7 +12,6 @@ import tech.tagline.trevor.api.network.payload.DisconnectPayload;
 import tech.tagline.trevor.api.network.payload.NetworkPayload;
 import tech.tagline.trevor.api.network.payload.ServerChangePayload;
 import tech.tagline.trevor.api.database.DatabaseProxy;
-import tech.tagline.trevor.common.TrevorCommon;
 
 import java.util.concurrent.CompletionException;
 
@@ -34,7 +33,6 @@ public class DatabaseProxyImpl implements DatabaseProxy {
 
   @Override
   public ConnectResult onPlayerConnect(User user) {
-    // TODO: Do something with this error
     try {
       DatabaseConnection connection = database.open().join();
       if (!connection.isOnline(user)) {
