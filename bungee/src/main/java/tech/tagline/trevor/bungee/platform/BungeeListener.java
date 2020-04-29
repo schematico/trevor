@@ -1,12 +1,14 @@
 package tech.tagline.trevor.bungee.platform;
 
 import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.ServerPing;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.PendingConnection;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.LoginEvent;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
+import net.md_5.bungee.api.event.ProxyPingEvent;
 import net.md_5.bungee.api.event.ServerConnectedEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
@@ -29,7 +31,7 @@ public class BungeeListener implements Listener {
     BungeeUser user = new BungeeUser(connection.getUniqueId(),
             connection.getVirtualHost().getAddress().toString());
 
-    DatabaseProxyImpl.ConnectResult result = plugin.getTrevor()
+    DatabaseProxyImpl.ConnectResult result = plugin.getCommon()
             .getDatabaseProxy().onPlayerConnect(user);
 
     if (!result.isAllowed()) {
@@ -44,7 +46,7 @@ public class BungeeListener implements Listener {
     // TODO: Maybe keep a map of platform users
     BungeeUser user = new BungeeUser(player);
 
-    plugin.getTrevor().getDatabaseProxy().onPlayerDisconnect(user);
+    plugin.getCommon().getDatabaseProxy().onPlayerDisconnect(user);
   }
 
   @EventHandler
@@ -59,7 +61,14 @@ public class BungeeListener implements Listener {
     // TODO: Maybe keep a map of platform users
     BungeeUser user = new BungeeUser(player);
 
-    plugin.getTrevor().getDatabaseProxy().onPlayerServerChange(user, server, previousServer);
+    plugin.getCommon().getDatabaseProxy().onPlayerServerChange(user, server, previousServer);
+  }
+
+  @EventHandler
+  public void onProxyPing(ProxyPingEvent event) {
+    ServerPing ping = event.getResponse();
+
+    ping.getPlayers().setOnline(plugin.getCommon().getInstanceData().getPlayerCount());
   }
 
   private BaseComponent[] serialize(String text) {

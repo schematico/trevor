@@ -8,35 +8,35 @@ import net.md_5.bungee.api.plugin.Plugin;
 public class TrevorBungee extends Plugin {
 
   private BungeePlatform platform;
-  private TrevorCommon trevor;
+  private TrevorCommon common;
 
   @Override
   public void onLoad() {
     this.platform = new BungeePlatform(this);
-    this.trevor = new TrevorCommon(platform);
+    this.common = new TrevorCommon(platform);
 
     platform.init();
 
-    trevor.load();
+    common.load();
   }
 
   @Override
   public void onEnable() {
     getProxy().getPluginManager().registerListener(this, new BungeeListener(this));
 
-    trevor.start();
+    common.start();
   }
 
   @Override
   public void onDisable() {
-    trevor.stop();
+    common.stop();
   }
 
   public BungeePlatform getPlatform() {
     return platform;
   }
 
-  public TrevorCommon getTrevor() {
-    return trevor;
+  public TrevorCommon getCommon() {
+    return common;
   }
 }

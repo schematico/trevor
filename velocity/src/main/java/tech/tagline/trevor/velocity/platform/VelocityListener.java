@@ -5,7 +5,9 @@ import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.connection.DisconnectEvent;
 import com.velocitypowered.api.event.connection.LoginEvent;
 import com.velocitypowered.api.event.player.ServerConnectedEvent;
+import com.velocitypowered.api.event.proxy.ProxyPingEvent;
 import com.velocitypowered.api.proxy.Player;
+import com.velocitypowered.api.proxy.server.ServerPing;
 import net.kyori.text.Component;
 import net.kyori.text.serializer.legacy.LegacyComponentSerializer;
 import tech.tagline.trevor.common.proxy.DatabaseProxyImpl;
@@ -27,7 +29,7 @@ public class VelocityListener {
     VelocityUser user = new VelocityUser(player);
 
     DatabaseProxyImpl.ConnectResult result =
-            plugin.getTrevor().getDatabaseProxy().onPlayerConnect(user);
+            plugin.getCommon().getDatabaseProxy().onPlayerConnect(user);
 
     if (!result.isAllowed()) {
       event.setResult(
@@ -41,7 +43,7 @@ public class VelocityListener {
     // TODO: Maybe keep a map of platform users
     VelocityUser user = new VelocityUser(player);
 
-    plugin.getTrevor().getDatabaseProxy().onPlayerDisconnect(user);
+    plugin.getCommon().getDatabaseProxy().onPlayerDisconnect(user);
   }
 
   @Subscribe
@@ -56,7 +58,17 @@ public class VelocityListener {
     // TODO: Maybe keep a map of platform users
     VelocityUser user = new VelocityUser(player);
 
-    plugin.getTrevor().getDatabaseProxy().onPlayerServerChange(user, server, previousServer);
+    plugin.getCommon().getDatabaseProxy().onPlayerServerChange(user, server, previousServer);
+  }
+
+  @Subscribe
+  public void onProxyPing(ProxyPingEvent event) {
+    ServerPing ping = event.getPing();
+    ServerPing.Builder builder = ping.asBuilder();
+
+    builder.onlinePlayers(plugin.getCommon().getInstanceData().getPlayerCount());
+
+    event.setPing(builder.build());
   }
 
   private Component serialize(String text) {

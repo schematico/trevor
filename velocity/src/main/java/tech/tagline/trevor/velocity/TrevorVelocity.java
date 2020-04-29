@@ -17,7 +17,7 @@ import java.nio.file.Path;
 @Plugin(id = "trevor")
 public class TrevorVelocity {
 
-  private TrevorCommon trevor;
+  private TrevorCommon common;
 
   private VelocityPlatform platform;
 
@@ -35,18 +35,21 @@ public class TrevorVelocity {
   public void onProxyStart(ProxyInitializeEvent event) {
     this.platform = new VelocityPlatform(this);
 
-    this.trevor = new TrevorCommon(platform);
+    this.common = new TrevorCommon(platform);
 
-    platform.init();
+    if (!platform.init()) {
+      platform.log("Trevor failed to load platform... Shutting down.");
+      return;
+    }
 
-    if (!trevor.load()) {
+    if (!common.load()) {
       platform.log("Trevor failed to load... Shutting down.");
       return;
     }
 
     proxy.getEventManager().register(this, new VelocityListener(this));
 
-    if (!trevor.start()) {
+    if (!common.start()) {
       platform.log("Trevor failed to start... Shutting down.");
       return;
     }
@@ -54,7 +57,7 @@ public class TrevorVelocity {
 
   @Subscribe
   public void onProxyShutdown(ProxyShutdownEvent event) {
-    trevor.stop();
+    common.stop();
   }
 
   public ProxyServer getProxy() {
@@ -65,8 +68,8 @@ public class TrevorVelocity {
     return dataFolder;
   }
 
-  public TrevorCommon getTrevor() {
-    return trevor;
+  public TrevorCommon getCommon() {
+    return common;
   }
 
   public Logger getLogger() {
