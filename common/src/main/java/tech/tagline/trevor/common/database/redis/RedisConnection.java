@@ -122,8 +122,6 @@ public class RedisConnection implements DatabaseConnection {
 
   @Override
   public void close() {
-    connection.hdel("heartbeat", instance);
-
     connection.close();
   }
 }
