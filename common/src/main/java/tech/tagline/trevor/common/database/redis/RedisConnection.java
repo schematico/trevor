@@ -95,10 +95,9 @@ public class RedisConnection implements DatabaseConnection {
     long timestamp = System.currentTimeMillis();
     if (connection.hexists(Keys.DATABASE_HEARTBEAT.of(), instance)) {
       long lastBeat = Long.parseLong(connection.hget(Keys.DATABASE_HEARTBEAT.of(), instance));
-      // TODO: Shutdown and inform console
       return timestamp >= lastBeat + 20;
     }
-    return true;
+    return false;
   }
 
   @Override
@@ -123,6 +122,8 @@ public class RedisConnection implements DatabaseConnection {
 
   @Override
   public void close() {
+    connection.hdel("heartbeat", instance);
+
     connection.close();
   }
 }

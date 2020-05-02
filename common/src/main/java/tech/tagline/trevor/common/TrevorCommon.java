@@ -13,7 +13,6 @@ import java.util.UUID;
 public class TrevorCommon {
 
   private final Platform platform;
-  private final String instance;
 
   private Gson gson;
 
@@ -24,17 +23,15 @@ public class TrevorCommon {
 
   public TrevorCommon(Platform platform) {
     this.platform = platform;
-    this.instance = platform.getInstanceConfiguration().getID();
   }
 
   public boolean load() {
     // TODO: Verify instance configuration values before pool creation
-
     this.gson = new Gson();
 
     this.data = new InstanceData();
 
-    this.database = platform.getDatabaseConfiguration().create(platform, proxy, data);
+    this.database = platform.getDatabaseConfiguration().create(platform, data);
 
     this.proxy = new DatabaseProxyImpl(platform, database, gson);
 
@@ -42,16 +39,9 @@ public class TrevorCommon {
   }
 
   public boolean start() {
-    database.init();
-
-    // Test connection and perform heartbeat
-    DatabaseConnection connection = database.open().join();
-    if (connection.isInstanceAlive()) {
-      platform.log("Duplicate instance detected with instance id: {0}", instance);
+    if (!database.init(proxy)) {
       return false;
     }
-
-    database.init();
 
     return true;
   }

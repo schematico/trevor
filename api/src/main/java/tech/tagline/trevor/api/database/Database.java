@@ -5,7 +5,7 @@ import java.util.concurrent.ExecutorService;
 
 public interface Database {
 
-  void init();
+  boolean init(DatabaseProxy proxy);
 
   void beat();
 

@@ -15,7 +15,7 @@ import java.util.concurrent.*;
 public class RedisDatabase implements Database {
 
   private final Platform platform;
-  private final DatabaseProxy proxy;
+  private final String instance;
   private final InstanceData data;
   private final JedisPool pool;
   private final ScheduledExecutorService executor;
@@ -24,22 +24,30 @@ public class RedisDatabase implements Database {
   private Future<?> intercomTask;
   private Future<?> heartbeatTask;
 
-  public RedisDatabase(Platform platform, DatabaseProxy proxy, InstanceData data, JedisPool pool) {
+  public RedisDatabase(Platform platform, InstanceData data, JedisPool pool) {
     this.platform = platform;
-    this.proxy = proxy;
+    this.instance = platform.getInstanceConfiguration().getID();
     this.data = data;
     this.pool = pool;
     this.executor = Executors.newScheduledThreadPool(8);
   }
 
   @Override
-  public void init() {
-    this.intercom = new RedisIntercom(platform, this,  proxy);
+  public boolean init(DatabaseProxy proxy) {
+    DatabaseConnection connection = open().join();
+    if (connection.isInstanceAlive()) {
+      platform.log("Duplicate instance detected with instance id: {0}", instance);
+      return false;
+    }
+
+    this.intercom = new RedisIntercom(platform, this, proxy);
 
     this.intercomTask = executor.submit(intercom);
 
     this.heartbeatTask =
-            executor.scheduleAtFixedRate(this::beat, 0,5, TimeUnit.SECONDS);
+            executor.scheduleAtFixedRate(this::beat, 5,5, TimeUnit.SECONDS);
+
+    return true;
   }
 
   @Override
@@ -56,7 +64,7 @@ public class RedisDatabase implements Database {
     CompletableFuture<DatabaseConnection> future = new CompletableFuture<>();
 
     executor.submit(() -> {
-      try (Jedis resource = pool.getResource()) {
+      try (Jedis resource = getResource()) {
         future.complete(new RedisConnection(platform.getInstanceConfiguration().getID(), resource));
       } catch (JedisConnectionException exception) {
         future.completeExceptionally(exception);
@@ -78,7 +86,13 @@ public class RedisDatabase implements Database {
 
   @Override
   public void kill() {
-    heartbeatTask.cancel(true);
-    intercomTask.cancel(true);
+    if (heartbeatTask != null) {
+      heartbeatTask.cancel(true);
+      intercomTask.cancel(true);
+    }
+  }
+
+  protected Jedis getResource() {
+    return pool.getResource();
   }
 }

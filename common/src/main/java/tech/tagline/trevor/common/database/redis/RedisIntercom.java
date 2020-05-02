@@ -4,6 +4,7 @@ import com.google.common.collect.Sets;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPubSub;
 import tech.tagline.trevor.api.data.Platform;
+import tech.tagline.trevor.api.database.Database;
 import tech.tagline.trevor.api.util.Keys;
 import tech.tagline.trevor.api.database.DatabaseIntercom;
 import tech.tagline.trevor.api.database.DatabaseProxy;
@@ -31,15 +32,11 @@ public class RedisIntercom extends JedisPubSub implements DatabaseIntercom {
 
   @Override
   public void run() {
-    database.open().thenAccept(connection -> {
-      channels.add(Keys.CHANNEL_INSTANCE.with(instance));
-      channels.add(Keys.CHANNEL_SERVERS.of());
-      channels.add(Keys.CHANNEL_DATA.of());
+    channels.add(Keys.CHANNEL_INSTANCE.with(instance));
+    channels.add(Keys.CHANNEL_SERVERS.of());
+    channels.add(Keys.CHANNEL_DATA.of());
 
-      Jedis jedis = ((RedisConnection) connection).getConnection();
-
-      jedis.subscribe(this, channels.toArray(new String[0]));
-    });
+    database.getResource().subscribe(this, channels.toArray(new String[0]));
   }
 
   public void add(String... channel) {

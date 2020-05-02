@@ -28,13 +28,13 @@ public class RedisConfiguration implements DatabaseConfiguration {
   }
 
   @Override
-  public RedisDatabase create(Platform platform, DatabaseProxy proxy, InstanceData data) {
+  public RedisDatabase create(Platform platform, InstanceData data) {
     JedisPoolConfig config = new JedisPoolConfig();
 
     config.setMaxTotal(maxConnections);
 
     JedisPool pool = new JedisPool(config, address, port, timeout, password, useSSL);
 
-    return new RedisDatabase(platform, proxy, data, pool);
+    return new RedisDatabase(platform, data, pool);
   }
 }
