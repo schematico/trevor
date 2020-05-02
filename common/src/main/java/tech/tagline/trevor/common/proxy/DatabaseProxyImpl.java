@@ -74,7 +74,6 @@ public class DatabaseProxyImpl implements DatabaseProxy {
 
   @Override
   public void onNetworkIntercom(String channel, String message) {
-    // TODO: Figure out why JsonParser#parseString() doesn't work since this method is deprecated
     JsonObject json = new JsonParser().parse(message).getAsJsonObject();
 
     String contentRaw = json.get("content").getAsString();
