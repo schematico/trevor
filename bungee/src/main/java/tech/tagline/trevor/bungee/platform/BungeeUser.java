@@ -9,7 +9,7 @@ public class BungeeUser extends User {
 
   public BungeeUser(ProxiedPlayer player) {
     super(player.getUniqueId(),
-            player.getPendingConnection().getVirtualHost().getAddress().toString());
+            player.getPendingConnection().getSocketAddress().toString());
   }
 
   public BungeeUser(UUID uuid, String address) {

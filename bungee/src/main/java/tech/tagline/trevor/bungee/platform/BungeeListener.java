@@ -29,7 +29,7 @@ public class BungeeListener implements Listener {
 
     // TODO: Maybe keep a map of platform users
     BungeeUser user = new BungeeUser(connection.getUniqueId(),
-            connection.getVirtualHost().getAddress().toString());
+            connection.getSocketAddress().toString());
 
     DatabaseProxyImpl.ConnectResult result = plugin.getCommon()
             .getDatabaseProxy().onPlayerConnect(user);

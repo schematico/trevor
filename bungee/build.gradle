@@ -8,3 +8,12 @@ dependencies {
 
 	compileOnly "net.md-5:bungeecord-api:${bungeeVersion}"
 }
+
+import org.apache.tools.ant.filters.ReplaceTokens
+
+processResources {
+	from(sourceSets.main.resources.srcDirs) {
+		include '**/*.yml'
+		filter(ReplaceTokens, tokens: [VERSION: project.version])
+	}
+}
