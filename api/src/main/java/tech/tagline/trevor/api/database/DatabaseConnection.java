@@ -22,6 +22,8 @@ public interface DatabaseConnection extends Closeable {
 
   void publish(String message);
 
+  void publish(String channel, String message);
+
   boolean isOnline(User user);
 
   boolean isInstanceAlive();

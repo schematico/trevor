@@ -121,6 +121,11 @@ public class RedisConnection implements DatabaseConnection {
   }
 
   @Override
+  public void publish(String channel, String message) {
+    connection.publish(channel, message);
+  }
+
+  @Override
   public void close() {
     connection.close();
   }
