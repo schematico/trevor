@@ -7,6 +7,7 @@ import tech.tagline.trevor.api.data.Platform;
 import tech.tagline.trevor.api.data.User;
 import tech.tagline.trevor.api.database.Database;
 import tech.tagline.trevor.api.database.DatabaseConnection;
+import tech.tagline.trevor.api.network.event.NetworkEvent;
 import tech.tagline.trevor.api.network.payload.ConnectPayload;
 import tech.tagline.trevor.api.network.payload.DisconnectPayload;
 import tech.tagline.trevor.api.network.payload.NetworkPayload;
@@ -39,7 +40,7 @@ public class DatabaseProxyImpl implements DatabaseProxy {
         ConnectPayload payload = ConnectPayload.of(instance, user.getUUID(), user.getAddress());
 
         connection.create(user);
-        connection.publish(gson.toJson(payload));
+        post(connection, payload);
 
         return ConnectResult.allow();
       }
@@ -57,7 +58,7 @@ public class DatabaseProxyImpl implements DatabaseProxy {
       DisconnectPayload payload = DisconnectPayload.of(instance, user.getUUID(), timestamp);
 
       connection.destroy(user.getUUID());
-      connection.publish(gson.toJson(payload));
+      post(connection, payload);
     });
   }
 
@@ -68,7 +69,7 @@ public class DatabaseProxyImpl implements DatabaseProxy {
              ServerChangePayload.of(instance, user.getUUID(), server, previousServer);
 
      connection.setServer(user, server);
-     connection.publish(gson.toJson(payload));
+     post(connection, payload);
    });
   }
 
@@ -87,5 +88,15 @@ public class DatabaseProxyImpl implements DatabaseProxy {
     } catch (IllegalArgumentException exception) {
       exception.printStackTrace();
     }
+  }
+
+  @Override
+  public void post(NetworkPayload payload) {
+    database.open().thenAccept(connection -> post(connection, payload));
+  }
+
+  @Override
+  public void post(DatabaseConnection connection, NetworkPayload payload) {
+    connection.publish(gson.toJson(payload));
   }
 }

@@ -1,10 +1,16 @@
 package tech.tagline.trevor.api.database;
 
 import tech.tagline.trevor.api.data.User;
+import tech.tagline.trevor.api.network.event.NetworkEvent;
+import tech.tagline.trevor.api.network.payload.NetworkPayload;
 
 import java.util.Optional;
 
 public interface DatabaseProxy {
+
+  void post(NetworkPayload event);
+
+  void post(DatabaseConnection connection, NetworkPayload event);
 
   ConnectResult onPlayerConnect(User user);
 

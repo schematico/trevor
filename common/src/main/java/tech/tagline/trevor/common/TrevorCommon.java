@@ -1,6 +1,8 @@
 package tech.tagline.trevor.common;
 
 import com.google.gson.Gson;
+import tech.tagline.trevor.api.TrevorAPI;
+import tech.tagline.trevor.api.TrevorService;
 import tech.tagline.trevor.api.database.DatabaseConnection;
 import tech.tagline.trevor.api.network.payload.DisconnectPayload;
 import tech.tagline.trevor.api.instance.InstanceData;
@@ -10,7 +12,7 @@ import tech.tagline.trevor.api.data.Platform;
 
 import java.util.UUID;
 
-public class TrevorCommon {
+public class TrevorCommon implements TrevorAPI {
 
   private final Platform platform;
 
@@ -26,6 +28,8 @@ public class TrevorCommon {
   }
 
   public boolean load() {
+    TrevorService.setAPI(this);
+
     // TODO: Verify instance configuration values before pool creation
     this.gson = new Gson();
 
