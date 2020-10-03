@@ -6,7 +6,7 @@ import tech.tagline.trevor.api.network.event.NetworkEvent;
 
 import java.util.UUID;
 
-public class ConnectPayload extends OwnedPayload implements NetworkEvent {
+public class ConnectPayload extends OwnedPayload {
 
   private String address;
 
