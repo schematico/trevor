@@ -27,8 +27,8 @@ public class RedisDatabase implements Database {
   private Future<?> intercomTask;
   private Future<?> heartbeatTask;
 
-  public RedisDatabase(TrevorCommon common, InstanceData data, JedisPool pool, Gson gson) {
-    this.platform = common.getPlatform();
+  public RedisDatabase(Platform platform, InstanceData data, JedisPool pool, Gson gson) {
+    this.platform = platform;
     this.instance = platform.getInstanceConfiguration().getID();
     this.data = data;
     this.pool = pool;

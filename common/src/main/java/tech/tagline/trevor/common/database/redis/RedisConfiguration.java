@@ -1,5 +1,6 @@
 package tech.tagline.trevor.common.database.redis;
 
+import com.google.gson.Gson;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 import tech.tagline.trevor.api.data.Platform;
@@ -28,13 +29,13 @@ public class RedisConfiguration implements DatabaseConfiguration {
   }
 
   @Override
-  public RedisDatabase create(Platform platform, InstanceData data) {
+  public RedisDatabase create(Platform platform, InstanceData data, Gson gson) {
     JedisPoolConfig config = new JedisPoolConfig();
 
     config.setMaxTotal(maxConnections);
 
     JedisPool pool = new JedisPool(config, address, port, timeout, password, useSSL);
 
-    return new RedisDatabase(platform, data, pool);
+    return new RedisDatabase(platform, data, pool, gson);
   }
 }

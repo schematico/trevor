@@ -36,7 +36,7 @@ public class TrevorCommon implements TrevorAPI {
 
     this.data = new InstanceData();
 
-    this.database = platform.getDatabaseConfiguration().create(platform, data);
+    this.database = platform.getDatabaseConfiguration().create(platform, data, gson);
 
     this.proxy = new DatabaseProxyImpl(platform, database, gson);
 
