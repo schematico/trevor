@@ -11,8 +11,8 @@ public class BungeeNetworkConnectEvent extends BungeeNetworkEvent implements Net
   private final String address;
 
   public BungeeNetworkConnectEvent(ConnectPayload payload) {
-    this.uuid = payload.getUUID();
-    this.address = payload.getAddress();
+    this.uuid = payload.uuid();
+    this.address = payload.address();
   }
 
   @Override

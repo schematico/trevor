@@ -12,9 +12,9 @@ public class BungeeNetworkServerChangeEvent extends BungeeNetworkEvent implement
   private final String previousServer;
 
   public BungeeNetworkServerChangeEvent(ServerChangePayload payload) {
-    this.uuid = payload.getUUID();
-    this.server = payload.getServer();
-    this.previousServer = payload.getPreviousServer();
+    this.uuid = payload.uuid();
+    this.server = payload.server();
+    this.previousServer = payload.previousServer();
   }
 
   @Override

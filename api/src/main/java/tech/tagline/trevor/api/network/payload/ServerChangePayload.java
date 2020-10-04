@@ -11,17 +11,17 @@ public class ServerChangePayload extends OwnedPayload {
   private final String previousServer;
 
   protected ServerChangePayload(String source, UUID uuid, String server, String previousServer) {
-    super(Content.SERVERCHANGE, source, uuid);
+    super(source, uuid);
 
     this.server = server;
     this.previousServer = previousServer;
   }
 
-  public String getServer() {
+  public String server() {
     return server;
   }
 
-  public String getPreviousServer() {
+  public String previousServer() {
     return previousServer;
   }
 

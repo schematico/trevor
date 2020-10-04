@@ -2,17 +2,17 @@ package tech.tagline.trevor.api.network.payload;
 
 import java.util.UUID;
 
-public abstract class OwnedPayload extends NetworkPayload {
+public abstract class OwnedPayload extends NetworkPayload<String> {
 
   private final UUID uuid;
 
-  protected OwnedPayload(Content content, String source, UUID uuid) {
-    super(content, source);
+  protected OwnedPayload(String source, UUID uuid) {
+    super(source);
 
     this.uuid = uuid;
   }
 
-  public UUID getUUID() {
+  public UUID uuid() {
     return uuid;
   }
 }

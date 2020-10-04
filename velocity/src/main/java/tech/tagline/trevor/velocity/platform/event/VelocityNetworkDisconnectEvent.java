@@ -11,8 +11,8 @@ public class VelocityNetworkDisconnectEvent extends VelocityNetworkEvent impleme
   private final long timestamp;
 
   public VelocityNetworkDisconnectEvent(DisconnectPayload payload) {
-    this.uuid = payload.getUUID();
-    this.timestamp = payload.getTimestamp();
+    this.uuid = payload.uuid();
+    this.timestamp = payload.timestamp();
   }
 
   @Override

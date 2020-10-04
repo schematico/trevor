@@ -32,9 +32,8 @@ public class VelocityEventProcessor implements EventProcessor {
   }
 
   @Override
-  public EventAction<VelocityNetworkMessageEvent> onMessage(String channel,
-                                                            NetworkPayload payload) {
-    return wrap(new VelocityNetworkMessageEvent(channel, payload));
+  public EventAction<VelocityNetworkMessageEvent> onMessage(NetworkPayload payload) {
+    return wrap(new VelocityNetworkMessageEvent(payload));
   }
 
   private <T extends VelocityNetworkEvent> EventAction<T> wrap(T event) {

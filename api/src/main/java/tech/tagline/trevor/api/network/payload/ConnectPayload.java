@@ -11,12 +11,12 @@ public class ConnectPayload extends OwnedPayload {
   private String address;
 
   protected ConnectPayload(String source, UUID uuid, String address) {
-    super(Content.CONNECT, source, uuid);
+    super(source, uuid);
 
     this.address = address;
   }
 
-  public String getAddress() {
+  public String address() {
     return address;
   }
 

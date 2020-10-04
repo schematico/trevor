@@ -8,6 +8,7 @@ import tech.tagline.trevor.api.network.payload.NetworkPayload;
 import tech.tagline.trevor.api.util.Keys;
 import tech.tagline.trevor.api.database.DatabaseIntercom;
 import tech.tagline.trevor.api.database.DatabaseProxy;
+import tech.tagline.trevor.common.util.Protocol;
 
 import java.util.Arrays;
 import java.util.Set;
@@ -62,19 +63,9 @@ public class RedisIntercom extends JedisPubSub implements DatabaseIntercom {
         if (channel.equals(Keys.CHANNEL_DATA.of())) {
           proxy.onNetworkIntercom(channel, message);
         } else {
-          try {
-            String[] data = message.split("\0");
-
-            Class<?> clazz = Class.forName(data[0]);
-            if (clazz.isAssignableFrom(NetworkPayload.class)) {
-              throw new IllegalStateException("Payload header is not a NetworkPayload: " + message);
-            }
-
-            NetworkPayload decoded = (NetworkPayload) gson.fromJson(data[1], clazz);
-
-            platform.getEventProcessor().onMessage(channel, decoded).post();
-          } catch (IllegalStateException | ClassNotFoundException exception) {
-            platform.log("Could not decode NetworkPayload: {0}", message);
+          NetworkPayload<?> payload = Protocol.deserialize(message, gson);
+          if (payload != null) {
+            payload.process(platform.getEventProcessor()).post();
           }
         }
       }

@@ -12,8 +12,8 @@ public class VelocityNetworkConnectEvent extends VelocityNetworkEvent
   private final String address;
 
   public VelocityNetworkConnectEvent(ConnectPayload payload) {
-    this.uuid = payload.getUUID();
-    this.address = payload.getAddress();
+    this.uuid = payload.uuid();
+    this.address = payload.address();
   }
 
   @Override

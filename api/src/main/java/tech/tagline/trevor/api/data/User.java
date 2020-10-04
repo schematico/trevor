@@ -6,19 +6,19 @@ import java.util.UUID;
 
 public abstract class User {
 
-  private UUID uuid;
-  private String address;
+  private final UUID uuid;
+  private final String address;
 
   protected User(UUID uuid, String address) {
     this.uuid = uuid;
     this.address = address;
   }
 
-  public UUID getUUID() {
+  public UUID uuid() {
     return uuid;
   }
 
-  public String getAddress() {
+  public String address() {
     return address;
   }
 

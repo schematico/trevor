@@ -34,8 +34,8 @@ public class BungeeEventProcessor implements EventProcessor {
   }
 
   @Override
-  public EventAction<BungeeNetworkMessageEvent> onMessage(String channel, NetworkPayload payload) {
-    return wrap(new BungeeNetworkMessageEvent(channel, payload));
+  public EventAction<BungeeNetworkMessageEvent> onMessage(NetworkPayload payload) {
+    return wrap(new BungeeNetworkMessageEvent(payload));
   }
 
   private <T extends BungeeNetworkEvent> EventAction<T> wrap(T event) {

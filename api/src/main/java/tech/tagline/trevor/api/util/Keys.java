@@ -28,6 +28,6 @@ public enum Keys {
   }
 
   public String with(User user) {
-    return key.replace("{}", user.getUUID().toString());
+    return key.replace("{}", user.uuid().toString());
   }
 }

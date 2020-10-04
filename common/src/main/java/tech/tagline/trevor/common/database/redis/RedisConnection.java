@@ -57,12 +57,12 @@ public class RedisConnection implements DatabaseConnection {
 
   @Override
   public boolean create(User user) {
-    if (connection.sismember(Keys.INSTANCE_PLAYERS.with(instance), user.getUUID().toString())) {
+    if (connection.sismember(Keys.INSTANCE_PLAYERS.with(instance), user.uuid().toString())) {
       return false;
     }
 
     connection.hmset(Keys.PLAYER_DATA.with(user), user.toDatabaseMap(instance));
-    connection.sadd(Keys.INSTANCE_PLAYERS.with(instance), user.getUUID().toString());
+    connection.sadd(Keys.INSTANCE_PLAYERS.with(instance), user.uuid().toString());
 
     return true;
   }
@@ -87,7 +87,7 @@ public class RedisConnection implements DatabaseConnection {
 
   @Override
   public boolean isOnline(User user) {
-    return connection.sismember(Keys.INSTANCE_PLAYERS.with(instance), user.getUUID().toString());
+    return connection.sismember(Keys.INSTANCE_PLAYERS.with(instance), user.uuid().toString());
   }
 
   @Override

@@ -11,8 +11,8 @@ public class BungeeNetworkDisconnectEvent extends BungeeNetworkEvent implements 
   private final long timestamp;
 
   public BungeeNetworkDisconnectEvent(DisconnectPayload payload) {
-    this.uuid = payload.getUUID();
-    this.timestamp = payload.getTimestamp();
+    this.uuid = payload.uuid();
+    this.timestamp = payload.timestamp();
   }
 
   @Override
