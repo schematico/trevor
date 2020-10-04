@@ -13,7 +13,7 @@ public interface EventProcessor {
 
   <T extends NetworkServerChangeEvent> EventAction<T> onServerChange(ServerChangePayload payload);
 
-  <T extends NetworkIntercomEvent> EventAction<T> onMessage(String channel, String message);
+  <T extends NetworkIntercomEvent> EventAction<T> onMessage(String channel, NetworkPayload payload);
 
   class EventAction<T extends NetworkEvent> {
 

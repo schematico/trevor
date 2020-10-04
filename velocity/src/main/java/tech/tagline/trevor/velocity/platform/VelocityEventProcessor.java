@@ -2,6 +2,7 @@ package tech.tagline.trevor.velocity.platform;
 
 import tech.tagline.trevor.api.network.payload.ConnectPayload;
 import tech.tagline.trevor.api.network.payload.DisconnectPayload;
+import tech.tagline.trevor.api.network.payload.NetworkPayload;
 import tech.tagline.trevor.api.network.payload.ServerChangePayload;
 import tech.tagline.trevor.api.network.event.EventProcessor;
 import tech.tagline.trevor.velocity.TrevorVelocity;
@@ -31,8 +32,9 @@ public class VelocityEventProcessor implements EventProcessor {
   }
 
   @Override
-  public EventAction<VelocityNetworkMessageEvent> onMessage(String channel, String message) {
-    return wrap(new VelocityNetworkMessageEvent(channel, message));
+  public EventAction<VelocityNetworkMessageEvent> onMessage(String channel,
+                                                            NetworkPayload payload) {
+    return wrap(new VelocityNetworkMessageEvent(channel, payload));
   }
 
   private <T extends VelocityNetworkEvent> EventAction<T> wrap(T event) {

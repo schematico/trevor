@@ -1,5 +1,6 @@
 package tech.tagline.trevor.common.database.redis;
 
+import com.google.gson.Gson;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.exceptions.JedisConnectionException;
@@ -9,6 +10,7 @@ import tech.tagline.trevor.api.database.DatabaseConnection;
 import tech.tagline.trevor.api.database.DatabaseIntercom;
 import tech.tagline.trevor.api.database.DatabaseProxy;
 import tech.tagline.trevor.api.instance.InstanceData;
+import tech.tagline.trevor.common.TrevorCommon;
 
 import java.util.concurrent.*;
 
@@ -18,17 +20,19 @@ public class RedisDatabase implements Database {
   private final String instance;
   private final InstanceData data;
   private final JedisPool pool;
+  private final Gson gson;
   private final ScheduledExecutorService executor;
 
   private RedisIntercom intercom;
   private Future<?> intercomTask;
   private Future<?> heartbeatTask;
 
-  public RedisDatabase(Platform platform, InstanceData data, JedisPool pool) {
-    this.platform = platform;
+  public RedisDatabase(TrevorCommon common, InstanceData data, JedisPool pool, Gson gson) {
+    this.platform = common.getPlatform();
     this.instance = platform.getInstanceConfiguration().getID();
     this.data = data;
     this.pool = pool;
+    this.gson = gson;
     this.executor = Executors.newScheduledThreadPool(8);
   }
 
@@ -40,7 +44,7 @@ public class RedisDatabase implements Database {
       return false;
     }
 
-    this.intercom = new RedisIntercom(platform, this, proxy);
+    this.intercom = new RedisIntercom(platform, this, proxy, gson);
 
     this.intercomTask = executor.submit(intercom);
 

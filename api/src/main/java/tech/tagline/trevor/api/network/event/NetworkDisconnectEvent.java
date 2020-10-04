@@ -4,7 +4,7 @@ import java.util.UUID;
 
 public interface NetworkDisconnectEvent extends NetworkEvent {
 
-  UUID getUUID();
+  UUID uuid();
 
-  long getTimestamp();
+  long timestamp();
 }

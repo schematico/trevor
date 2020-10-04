@@ -7,7 +7,6 @@ import tech.tagline.trevor.api.data.Platform;
 import tech.tagline.trevor.api.data.User;
 import tech.tagline.trevor.api.database.Database;
 import tech.tagline.trevor.api.database.DatabaseConnection;
-import tech.tagline.trevor.api.network.event.NetworkEvent;
 import tech.tagline.trevor.api.network.payload.ConnectPayload;
 import tech.tagline.trevor.api.network.payload.DisconnectPayload;
 import tech.tagline.trevor.api.network.payload.NetworkPayload;
@@ -98,6 +97,8 @@ public class DatabaseProxyImpl implements DatabaseProxy {
 
   @Override
   public void post(String channel, DatabaseConnection connection, NetworkPayload payload) {
-    connection.publish(channel, gson.toJson(payload));
+    String name = payload.getClass().getCanonicalName();
+
+    connection.publish(channel, name + "\0" + gson.toJson(payload));
   }
 }

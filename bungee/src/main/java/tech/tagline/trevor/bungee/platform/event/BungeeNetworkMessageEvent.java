@@ -1,24 +1,25 @@
 package tech.tagline.trevor.bungee.platform.event;
 
 import tech.tagline.trevor.api.network.event.NetworkIntercomEvent;
+import tech.tagline.trevor.api.network.payload.NetworkPayload;
 
 public class BungeeNetworkMessageEvent extends BungeeNetworkEvent implements NetworkIntercomEvent {
 
   private final String channel;
-  private final String message;
+  private final NetworkPayload payload;
 
-  public BungeeNetworkMessageEvent(String channel, String message) {
+  public BungeeNetworkMessageEvent(String channel, NetworkPayload payload) {
     this.channel = channel;
-    this.message = message;
+    this.payload = payload;
   }
 
   @Override
-  public String getChannel() {
+  public String channel() {
     return channel;
   }
 
   @Override
-  public String getMessage() {
-    return message;
+  public NetworkPayload payload() {
+    return payload;
   }
 }

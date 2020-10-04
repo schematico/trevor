@@ -16,12 +16,12 @@ public class BungeeNetworkConnectEvent extends BungeeNetworkEvent implements Net
   }
 
   @Override
-  public UUID getUUID() {
+  public UUID uuid() {
     return uuid;
   }
 
   @Override
-  public String getAddress() {
+  public String address() {
     return address;
   }
 }

@@ -18,17 +18,17 @@ public class VelocityNetworkServerChangeEvent extends VelocityNetworkEvent imple
   }
 
   @Override
-  public UUID getUUID() {
+  public UUID uuid() {
     return uuid;
   }
 
   @Override
-  public String getServer() {
+  public String server() {
     return server;
   }
 
   @Override
-  public String getPreviousServer() {
+  public String previousServer() {
     return previousServer;
   }
 }

@@ -4,7 +4,7 @@ import java.util.UUID;
 
 public interface NetworkConnectEvent extends NetworkEvent {
 
-  UUID getUUID();
+  UUID uuid();
 
-  String getAddress();
+  String address();
 }

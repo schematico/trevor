@@ -4,9 +4,9 @@ import java.util.UUID;
 
 public interface NetworkServerChangeEvent extends NetworkEvent {
 
-  UUID getUUID();
+  UUID uuid();
 
-  String getServer();
+  String server();
 
-  String getPreviousServer();
+  String previousServer();
 }

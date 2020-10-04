@@ -2,6 +2,7 @@ package tech.tagline.trevor.bungee.platform;
 
 import tech.tagline.trevor.api.network.payload.ConnectPayload;
 import tech.tagline.trevor.api.network.payload.DisconnectPayload;
+import tech.tagline.trevor.api.network.payload.NetworkPayload;
 import tech.tagline.trevor.api.network.payload.ServerChangePayload;
 import tech.tagline.trevor.bungee.TrevorBungee;
 import tech.tagline.trevor.bungee.platform.event.*;
@@ -33,8 +34,8 @@ public class BungeeEventProcessor implements EventProcessor {
   }
 
   @Override
-  public EventAction<BungeeNetworkMessageEvent> onMessage(String channel, String message) {
-    return wrap(new BungeeNetworkMessageEvent(channel, message));
+  public EventAction<BungeeNetworkMessageEvent> onMessage(String channel, NetworkPayload payload) {
+    return wrap(new BungeeNetworkMessageEvent(channel, payload));
   }
 
   private <T extends BungeeNetworkEvent> EventAction<T> wrap(T event) {

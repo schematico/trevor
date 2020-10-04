@@ -1,24 +1,25 @@
 package tech.tagline.trevor.velocity.platform.event;
 
 import tech.tagline.trevor.api.network.event.NetworkIntercomEvent;
+import tech.tagline.trevor.api.network.payload.NetworkPayload;
 
 public class VelocityNetworkMessageEvent extends VelocityNetworkEvent implements NetworkIntercomEvent {
 
   private final String channel;
-  private final String message;
+  private final NetworkPayload payload;
 
-  public VelocityNetworkMessageEvent(String channel, String message) {
+  public VelocityNetworkMessageEvent(String channel, NetworkPayload payload) {
     this.channel = channel;
-    this.message = message;
+    this.payload = payload;
   }
 
   @Override
-  public String getChannel() {
+  public String channel() {
     return channel;
   }
 
   @Override
-  public String getMessage() {
-    return message;
+  public NetworkPayload payload() {
+    return payload;
   }
 }

@@ -3,6 +3,7 @@ package tech.tagline.trevor.api.database;
 import tech.tagline.trevor.api.instance.InstanceData;
 import tech.tagline.trevor.api.data.User;
 import tech.tagline.trevor.api.network.payload.DisconnectPayload;
+import tech.tagline.trevor.api.network.payload.NetworkPayload;
 
 import java.io.Closeable;
 import java.util.Set;
@@ -19,8 +20,6 @@ public interface DatabaseConnection extends Closeable {
   DisconnectPayload destroy(UUID uuid);
 
   void setServer(User user, String server);
-
-  void publish(String message);
 
   void publish(String channel, String message);
 

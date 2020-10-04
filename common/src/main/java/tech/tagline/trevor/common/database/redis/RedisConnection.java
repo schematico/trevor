@@ -116,11 +116,6 @@ public class RedisConnection implements DatabaseConnection {
   }
 
   @Override
-  public void publish(String message) {
-    connection.publish(Keys.CHANNEL_DATA.of(), message);
-  }
-
-  @Override
   public void publish(String channel, String message) {
     connection.publish(channel, message);
   }

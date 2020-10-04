@@ -16,12 +16,12 @@ public class BungeeNetworkDisconnectEvent extends BungeeNetworkEvent implements 
   }
 
   @Override
-  public UUID getUUID() {
+  public UUID uuid() {
     return uuid;
   }
 
   @Override
-  public long getTimestamp() {
+  public long timestamp() {
     return timestamp;
   }
 }
