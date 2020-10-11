@@ -31,8 +31,13 @@ public class TrevorVelocity {
   @DataDirectory
   private Path dataFolder;
 
+  public TrevorVelocity() {
+    System.out.println("Trevor construct");
+  }
+
   @Subscribe
   public void onProxyStart(ProxyInitializeEvent event) {
+    System.out.println("Trevor initialize");
     this.platform = new VelocityPlatform(this);
 
     this.common = new TrevorCommon(platform);
@@ -47,12 +52,12 @@ public class TrevorVelocity {
       return;
     }
 
-    proxy.getEventManager().register(this, new VelocityListener(this));
-
     if (!common.start()) {
       platform.log("Trevor failed to start... Shutting down.");
       return;
     }
+
+    proxy.getEventManager().register(this, new VelocityListener(this));
   }
 
   @Subscribe
