@@ -1,5 +1,6 @@
 package tech.tagline.trevor.bungee.platform;
 
+import tech.tagline.trevor.api.util.Strings;
 import tech.tagline.trevor.bungee.TrevorBungee;
 import tech.tagline.trevor.api.network.event.EventProcessor;
 import tech.tagline.trevor.common.platform.AbstractPlatformBase;
@@ -38,8 +39,6 @@ public class BungeePlatform extends AbstractPlatformBase {
 
   @Override
   public void log(String message, Object... values) {
-    super.log(message, values);
-
-    plugin.getLogger().info(message);
+    plugin.getLogger().info(Strings.format(message, values));
   }
 }

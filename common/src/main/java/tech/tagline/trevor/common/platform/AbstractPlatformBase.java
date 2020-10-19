@@ -49,15 +49,6 @@ public abstract class AbstractPlatformBase implements Platform {
             new RedisConfiguration(address, port, password, maxConnections, useSSL, timeout);
   }
 
-  // Implement simply for the purpose of replacing values
-  @Override
-  public void log(String message, Object... values) {
-    for (int i = 0; i < values.length; i++) {
-      Object value = values[i];
-      message = message.replace("{" + i + "}", value != null ? value.toString() : "null");
-    }
-  }
-
   @Override
   public InstanceConfiguration getInstanceConfiguration() {
     return instanceConfiguration;

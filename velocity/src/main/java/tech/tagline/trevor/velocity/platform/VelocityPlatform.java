@@ -1,6 +1,7 @@
 package tech.tagline.trevor.velocity.platform;
 
 import tech.tagline.trevor.api.network.event.EventProcessor;
+import tech.tagline.trevor.api.util.Strings;
 import tech.tagline.trevor.common.platform.AbstractPlatformBase;
 import tech.tagline.trevor.velocity.TrevorVelocity;
 
@@ -38,8 +39,6 @@ public class VelocityPlatform extends AbstractPlatformBase {
 
   @Override
   public void log(String message, Object... values) {
-    super.log(message, values);
-
-    plugin.getLogger().info(message);
+    plugin.getLogger().info(Strings.format(message, values));
   }
 }
