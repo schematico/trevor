@@ -4,4 +4,6 @@ plugins {
 
 dependencies {
 	compile project(':trevor-api')
+
+	compile "org.spongepowered:configurate-yaml:${configurateVersion}"
 }

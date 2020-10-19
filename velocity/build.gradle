@@ -9,7 +9,9 @@ repositories {
 
 dependencies {
 	compile project(':trevor-api')
-	compile project(':trevor-common')
+	compile (project(':trevor-common')) {
+		exclude group: 'org.spongepowered'
+	}
 
 	compileOnly "com.velocitypowered:velocity-api:${velocityVersion}"
 	annotationProcessor "com.velocitypowered:velocity-api:${velocityVersion}"

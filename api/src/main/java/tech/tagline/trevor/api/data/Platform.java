@@ -6,6 +6,8 @@ import tech.tagline.trevor.api.network.event.EventProcessor;
 
 public interface Platform {
 
+  boolean init();
+
   InstanceConfiguration getInstanceConfiguration();
 
   DatabaseConfiguration getDatabaseConfiguration();
