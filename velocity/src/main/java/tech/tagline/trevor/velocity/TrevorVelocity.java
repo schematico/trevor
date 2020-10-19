@@ -37,7 +37,6 @@ public class TrevorVelocity {
 
   @Subscribe
   public void onProxyStart(ProxyInitializeEvent event) {
-    System.out.println("Trevor initialize");
     this.platform = new VelocityPlatform(this);
 
     this.common = new TrevorCommon(platform);

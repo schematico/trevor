@@ -12,6 +12,7 @@ import net.md_5.bungee.api.event.ProxyPingEvent;
 import net.md_5.bungee.api.event.ServerConnectedEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
+import net.md_5.bungee.event.EventPriority;
 import tech.tagline.trevor.bungee.TrevorBungee;
 import tech.tagline.trevor.common.proxy.DatabaseProxyImpl;
 
@@ -69,6 +70,13 @@ public class BungeeListener implements Listener {
     ServerPing ping = event.getResponse();
 
     ping.getPlayers().setOnline(plugin.getCommon().getInstanceData().getPlayerCount());
+  }
+
+  @EventHandler(priority = EventPriority.LOWEST)
+  public void onServerPing(ProxyPingEvent event) {
+    event.getResponse().getPlayers().setOnline(
+            plugin.getCommon().getInstanceData().getPlayerCount()
+    );
   }
 
   private BaseComponent[] serialize(String text) {

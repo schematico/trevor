@@ -1,5 +1,6 @@
 package tech.tagline.trevor.velocity.platform;
 
+import com.velocitypowered.api.event.PostOrder;
 import com.velocitypowered.api.event.ResultedEvent;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.connection.DisconnectEvent;
@@ -69,6 +70,14 @@ public class VelocityListener {
     builder.onlinePlayers(plugin.getCommon().getInstanceData().getPlayerCount());
 
     event.setPing(builder.build());
+  }
+
+  @Subscribe(order = PostOrder.LAST)
+  public void onServerPing(ProxyPingEvent event) {
+    event.setPing(
+            event.getPing().asBuilder()
+                    .onlinePlayers(plugin.getCommon().getInstanceData().getPlayerCount()).build()
+    );
   }
 
   private Component serialize(String text) {
