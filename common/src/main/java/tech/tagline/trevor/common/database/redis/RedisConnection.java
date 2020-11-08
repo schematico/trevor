@@ -43,7 +43,7 @@ public class RedisConnection implements DatabaseConnection {
     Map<String, String> heartbeats = connection.hgetAll(Keys.DATABASE_HEARTBEAT.of());
     for (Map.Entry<String, String> entry : heartbeats.entrySet()) {
       long lastBeat = Long.parseLong(entry.getValue());
-      if (timestamp <= lastBeat + 30) {
+      if (timestamp <= lastBeat + (30 * 1000)) { // 30 seconds
         builder.add(entry.getKey());
 
         playerCount += connection.scard(Keys.INSTANCE_PLAYERS.with(entry.getKey()));
