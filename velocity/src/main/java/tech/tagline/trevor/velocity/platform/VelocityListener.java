@@ -10,6 +10,7 @@ import com.velocitypowered.api.event.proxy.ProxyPingEvent;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.server.ServerPing;
 import net.kyori.text.Component;
+import net.kyori.text.TextComponent;
 import net.kyori.text.serializer.legacy.LegacyComponentSerializer;
 import tech.tagline.trevor.common.proxy.DatabaseProxyImpl;
 import tech.tagline.trevor.velocity.TrevorVelocity;
@@ -34,7 +35,8 @@ public class VelocityListener {
 
     if (!result.isAllowed()) {
       event.setResult(
-              ResultedEvent.ComponentResult.denied(serialize(result.getMessage().toString())));
+              ResultedEvent.ComponentResult.denied(serialize(result.getMessage().orElse("")))
+      );
     }
   }
 
