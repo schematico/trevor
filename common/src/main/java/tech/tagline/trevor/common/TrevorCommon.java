@@ -10,6 +10,7 @@ import tech.tagline.trevor.api.database.Database;
 import tech.tagline.trevor.api.util.Keys;
 import tech.tagline.trevor.common.proxy.DatabaseProxyImpl;
 import tech.tagline.trevor.api.data.Platform;
+import tech.tagline.trevor.common.util.Protocol;
 
 import java.util.UUID;
 
@@ -61,7 +62,7 @@ public class TrevorCommon implements TrevorAPI {
         connection.getNetworkPlayers().forEach(uuid -> {
           DisconnectPayload payload = connection.destroy(UUID.fromString(uuid));
 
-          connection.publish(Keys.CHANNEL_DATA.of(), gson.toJson(payload));
+          connection.publish(Keys.CHANNEL_DATA.of(), Protocol.serialize(payload, gson));
         });
       }
 
