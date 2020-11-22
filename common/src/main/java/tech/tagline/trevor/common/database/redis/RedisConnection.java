@@ -95,7 +95,7 @@ public class RedisConnection implements DatabaseConnection {
     long timestamp = System.currentTimeMillis();
     if (connection.hexists(Keys.DATABASE_HEARTBEAT.of(), instance)) {
       long lastBeat = Long.parseLong(connection.hget(Keys.DATABASE_HEARTBEAT.of(), instance));
-      return timestamp >= lastBeat + 20;
+      return timestamp >= lastBeat + (20 * 1000); // 20 seconds in terms of milliseconds
     }
     return false;
   }
