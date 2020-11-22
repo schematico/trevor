@@ -116,6 +116,11 @@ public class RedisConnection implements DatabaseConnection {
   }
 
   @Override
+  public boolean isRunning() {
+    return connection.isConnected();
+  }
+
+  @Override
   public void publish(String channel, String message) {
     connection.publish(channel, message);
   }

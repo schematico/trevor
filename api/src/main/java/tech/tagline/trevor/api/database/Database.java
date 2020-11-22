@@ -16,4 +16,6 @@ public interface Database {
   ExecutorService getExecutor();
 
   void kill();
+
+  DatabaseConnection connect();
 }

@@ -32,4 +32,6 @@ public interface DatabaseConnection extends Closeable {
   long getNetworkPlayerCount();
 
   void deleteHeartbeat();
+
+  boolean isRunning();
 }

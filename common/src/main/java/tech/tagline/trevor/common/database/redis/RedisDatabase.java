@@ -10,7 +10,7 @@ import tech.tagline.trevor.api.database.DatabaseConnection;
 import tech.tagline.trevor.api.database.DatabaseIntercom;
 import tech.tagline.trevor.api.database.DatabaseProxy;
 import tech.tagline.trevor.api.instance.InstanceData;
-import tech.tagline.trevor.common.TrevorCommon;
+import tech.tagline.trevor.common.api.concurrent.ConnectionQueue;
 
 import java.util.concurrent.*;
 
@@ -22,6 +22,7 @@ public class RedisDatabase implements Database {
   private final JedisPool pool;
   private final Gson gson;
   private final ScheduledExecutorService executor;
+  private final ConnectionQueue queue;
 
   private RedisIntercom intercom;
   private Future<?> intercomTask;
@@ -34,6 +35,7 @@ public class RedisDatabase implements Database {
     this.pool = pool;
     this.gson = gson;
     this.executor = Executors.newScheduledThreadPool(8);
+    this.queue = new ConnectionQueue(this);
   }
 
   @Override
@@ -65,17 +67,7 @@ public class RedisDatabase implements Database {
 
   @Override
   public CompletableFuture<DatabaseConnection> open() {
-    CompletableFuture<DatabaseConnection> future = new CompletableFuture<>();
-
-    executor.submit(() -> {
-      try (Jedis resource = getResource()) {
-        future.complete(new RedisConnection(platform.getInstanceConfiguration().getID(), resource));
-      } catch (JedisConnectionException exception) {
-        future.completeExceptionally(exception);
-      }
-    });
-
-    return future;
+    return queue.open();
   }
 
   @Override
@@ -94,6 +86,11 @@ public class RedisDatabase implements Database {
       heartbeatTask.cancel(true);
       intercomTask.cancel(true);
     }
+  }
+
+  @Override
+  public DatabaseConnection connect() {
+    return new RedisConnection(platform.getInstanceConfiguration().getID(), getResource());
   }
 
   protected Jedis getResource() {
