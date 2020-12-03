@@ -8,10 +8,8 @@ import com.velocitypowered.api.event.connection.LoginEvent;
 import com.velocitypowered.api.event.player.ServerConnectedEvent;
 import com.velocitypowered.api.event.proxy.ProxyPingEvent;
 import com.velocitypowered.api.proxy.Player;
-import com.velocitypowered.api.proxy.server.ServerPing;
-import net.kyori.text.Component;
-import net.kyori.text.TextComponent;
-import net.kyori.text.serializer.legacy.LegacyComponentSerializer;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import tech.tagline.trevor.common.proxy.DatabaseProxyImpl;
 import tech.tagline.trevor.velocity.TrevorVelocity;
 
@@ -64,25 +62,16 @@ public class VelocityListener {
     plugin.getCommon().getDatabaseProxy().onPlayerServerChange(user, server, previousServer);
   }
 
-  @Subscribe
-  public void onProxyPing(ProxyPingEvent event) {
-    ServerPing ping = event.getPing();
-    ServerPing.Builder builder = ping.asBuilder();
-
-    builder.onlinePlayers(plugin.getCommon().getInstanceData().getPlayerCount());
-
-    event.setPing(builder.build());
-  }
-
   @Subscribe(order = PostOrder.LAST)
   public void onServerPing(ProxyPingEvent event) {
     event.setPing(
-            event.getPing().asBuilder()
-                    .onlinePlayers(plugin.getCommon().getInstanceData().getPlayerCount()).build()
+            event.getPing().asBuilder().onlinePlayers(
+                    plugin.getCommon().getInstanceData().getPlayerCount()
+            ).build()
     );
   }
 
   private Component serialize(String text) {
-    return LegacyComponentSerializer.legacy().deserialize(text, '&');
+    return LegacyComponentSerializer.legacyAmpersand().deserialize(text);
   }
 }
