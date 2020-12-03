@@ -66,13 +66,6 @@ public class BungeeListener implements Listener {
   }
 
   @EventHandler
-  public void onProxyPing(ProxyPingEvent event) {
-    ServerPing ping = event.getResponse();
-
-    ping.getPlayers().setOnline(plugin.getCommon().getInstanceData().getPlayerCount());
-  }
-
-  @EventHandler(priority = EventPriority.LOWEST)
   public void onServerPing(ProxyPingEvent event) {
     event.getResponse().getPlayers().setOnline(
             plugin.getCommon().getInstanceData().getPlayerCount()
