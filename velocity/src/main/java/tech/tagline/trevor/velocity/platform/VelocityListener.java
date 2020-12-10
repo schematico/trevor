@@ -32,8 +32,10 @@ public class VelocityListener {
             plugin.getCommon().getDatabaseProxy().onPlayerConnect(user);
 
     if (!result.isAllowed()) {
-      event.setResult(
-              ResultedEvent.ComponentResult.denied(serialize(result.getMessage().orElse("")))
+      result.getMessage().ifPresent(message ->
+              event.setResult(
+                ResultedEvent.ComponentResult.denied(serialize(message))
+              )
       );
     }
   }
