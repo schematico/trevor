@@ -36,6 +36,8 @@ public class BungeeListener implements Listener {
             .getDatabaseProxy().onPlayerConnect(user);
 
     if (!result.isAllowed()) {
+      event.setCancelled(true);
+
       result.getMessage().ifPresent(message -> event.setCancelReason(serialize(message)));
     }
   }
