@@ -13,6 +13,7 @@ import tech.tagline.trevor.api.database.DatabaseProxy;
 import tech.tagline.trevor.api.util.Keys;
 import tech.tagline.trevor.common.util.Protocol;
 
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 
 public class DatabaseProxyImpl implements DatabaseProxy {
@@ -32,22 +33,22 @@ public class DatabaseProxyImpl implements DatabaseProxy {
   }
 
   @Override
-  public ConnectResult onPlayerConnect(User user) {
-    try {
-      DatabaseConnection connection = database.open().join();
-      if (!connection.isOnline(user)) {
-        ConnectPayload payload = ConnectPayload.of(instance, user.uuid(), user.address());
+  public CompletableFuture<ConnectResult> onPlayerConnect(User user) {
+    return database.open().thenApply(connection -> {
+      try {
+        if (!connection.isOnline(user)) {
+          ConnectPayload payload = ConnectPayload.of(instance, user.uuid(), user.address());
 
-        connection.create(user);
-        post(Keys.CHANNEL_DATA.of(), connection, payload);
+          connection.create(user);
+          post(Keys.CHANNEL_DATA.of(), connection, payload);
 
-        return ConnectResult.allow();
+          return ConnectResult.allow();
+        }
+        return ConnectResult.deny("&cYou are already logged in.");
+      } catch (CompletionException exception) {
+        return ConnectResult.deny("&cAn error occurred, please try again.");
       }
-      return ConnectResult.deny("&cYou are already logged in.");
-    } catch (CompletionException exception) {
-      exception.printStackTrace();
-    }
-    return ConnectResult.deny("&cAn error occurred, please try again.");
+    });
   }
 
   @Override

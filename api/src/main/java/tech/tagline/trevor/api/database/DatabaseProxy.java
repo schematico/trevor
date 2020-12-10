@@ -5,6 +5,7 @@ import tech.tagline.trevor.api.network.event.NetworkEvent;
 import tech.tagline.trevor.api.network.payload.NetworkPayload;
 
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 public interface DatabaseProxy {
 
@@ -12,7 +13,7 @@ public interface DatabaseProxy {
 
   void post(String channel, DatabaseConnection connection, NetworkPayload<?> event);
 
-  ConnectResult onPlayerConnect(User user);
+  CompletableFuture<ConnectResult> onPlayerConnect(User user);
 
   void onPlayerDisconnect(User user);
 
