@@ -11,8 +11,8 @@ allprojects {
     apply plugin: 'com.github.johnrengelman.shadow'
     apply plugin: 'java'
 
-	group 'tech.tagline'
-	version '1.0.0-SNAPSHOT'
+	group 'co.schemati'
+	version '2.0.0-SNAPSHOT'
 
 	sourceCompatibility = 1.8
 	targetCompatibility = 1.8
