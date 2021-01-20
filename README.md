@@ -2,7 +2,7 @@
 ![Java CI with Gradle](https://github.com/schematico/trevor/workflows/Java%20CI%20with%20Gradle/badge.svg)
 [![Discord](https://img.shields.io/discord/548983491157819413.svg?logo=discord&label=)](https://discord.gg/7AEgrbE)
 
-Trevor is an open-source platform independent solution that unionizes Redis and[Notchian-compliant](https://www.spigotmc.org/threads/what-is-notchian.156265/#post-1659509) proxies for cross-instance proxy communication.
+Trevor is an open-source platform independent solution that unionizes Redis and [Notchian-compliant](https://www.spigotmc.org/threads/what-is-notchian.156265/#post-1659509) proxies for cross-instance proxy communication.
 
 ## Goals
 As a community, to unionize our thinking (and as well as our proxies!) setting goals is an important part of working together as a group.
