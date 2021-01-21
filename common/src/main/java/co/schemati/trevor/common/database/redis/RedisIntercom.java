@@ -73,10 +73,9 @@ public class RedisIntercom extends JedisPubSub implements DatabaseIntercom {
         if (channel.equals(Keys.CHANNEL_DATA.of())) {
           proxy.onNetworkIntercom(channel, message);
         } else {
-          NetworkPayload<?> payload = Protocol.deserialize(message, gson);
-          if (payload != null) {
-            payload.process(platform.getEventProcessor()).post();
-          }
+          Protocol.deserialize(message, gson).ifPresent(payload ->
+                  payload.process(platform.getEventProcessor()).post()
+          );
         }
       }
     });

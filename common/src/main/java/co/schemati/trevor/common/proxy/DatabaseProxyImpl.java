@@ -74,10 +74,9 @@ public class DatabaseProxyImpl implements DatabaseProxy {
 
   @Override
   public void onNetworkIntercom(String channel, String message) {
-    NetworkPayload<?> payload = Protocol.deserialize(message, gson);
-    if (payload != null) {
-      payload.process(platform.getEventProcessor()).post();
-    }
+    Protocol.deserialize(message, gson).ifPresent(payload ->
+            payload.process(platform.getEventProcessor()).post()
+    );
   }
 
   @Override
