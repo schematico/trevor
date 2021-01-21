@@ -22,8 +22,7 @@ public class TrevorService {
    *
    * <br>
    *
-   * Only 1 implementation can be registered; otherwise, an {@link IllegalStateException} will be
-   * thrown.
+   * If an implementation is already defined, a {@link IllegalStateException} is thrown.
    *
    * @param api the api
    */
