@@ -5,7 +5,7 @@ import ninja.leaping.configurate.ConfigurationNode;
 import co.schemati.trevor.api.data.Platform;
 import co.schemati.trevor.api.database.DatabaseConfiguration;
 import co.schemati.trevor.api.instance.InstanceConfiguration;
-import co.schemati.trevor.common.api.io.Configuration;
+import co.schemati.trevor.common.io.Configuration;
 
 import java.io.File;
 

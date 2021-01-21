@@ -1,4 +1,4 @@
-package co.schemati.trevor.common.api.io;
+package co.schemati.trevor.common.io;
 
 import co.schemati.trevor.common.TrevorCommon;
 
