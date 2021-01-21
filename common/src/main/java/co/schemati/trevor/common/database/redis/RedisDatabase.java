@@ -37,8 +37,8 @@ public class RedisDatabase implements Database {
 
   @Override
   public boolean init(DatabaseProxy proxy) {
-    DatabaseConnection connection = open().join();
-    if (connection.isInstanceAlive()) {
+    boolean duplicate = open().thenApply(DatabaseConnection::isInstanceAlive).join();
+    if (duplicate) {
       platform.log("Duplicate instance detected with instance id: {0}", instance);
       return false;
     }
