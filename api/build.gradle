@@ -43,7 +43,7 @@ publishing {
 			}
 
 			name = 'portalkings-repo'
-			def base = 'http://repo.portalkings.io/repository/maven'
+			def base = 'http://repo.schemati.co/repository/maven'
 			def releasesRepoUrl = "$base-releases/"
 			def snapshotsRepoUrl = "$base-snapshots/"
 			url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
