@@ -45,11 +45,7 @@ public class TrevorCommon implements TrevorAPI {
   }
 
   public boolean start() {
-    if (!database.init(proxy)) {
-      return false;
-    }
-
-    return true;
+    return database.init(proxy);
   }
 
   public boolean stop() {
