@@ -19,7 +19,7 @@ public class InstanceConfiguration {
   /**
    * Returns the instance's id.
    *
-   * <br/>
+   * <br>
    *
    * The id is used to register the instance in the remote database, so it must be unique.
    *

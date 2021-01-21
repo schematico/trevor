@@ -32,7 +32,7 @@ public interface DatabaseConnection extends Closeable {
    * Registers the provided {@link User} in the remote database while also checking if they are
    * already logged into another instance.
    *
-   * <br/>
+   * <br>
    *
    * A false result typically means the user should be denied access as they're already logged
    * into another instance.
@@ -46,7 +46,7 @@ public interface DatabaseConnection extends Closeable {
   /**
    * Removes the {@link User} registration in the remote database.
    *
-   * <br/>
+   * <br>
    *
    * Returns a {@link DisconnectPayload}. This method does not announce the payload itself.
    *

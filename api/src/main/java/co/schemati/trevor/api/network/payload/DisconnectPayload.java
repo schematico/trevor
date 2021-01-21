@@ -44,6 +44,10 @@ public class DisconnectPayload extends OwnedPayload {
    * Wraps the {@link DisconnectPayload} constructor.
    *
    * @see DisconnectPayload#DisconnectPayload(String, UUID, long)
+   *
+   * @param source the instance source
+   * @param uuid the user uuid
+   * @param timestamp the disconnect timestamp
    */
   public static DisconnectPayload of(String source, UUID uuid, long timestamp) {
     return new DisconnectPayload(source, uuid, timestamp);

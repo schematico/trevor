@@ -20,7 +20,7 @@ public class TrevorService {
   /**
    * Provides an implementation of {@link TrevorAPI}.
    *
-   * <br/>
+   * <br>
    *
    * Only 1 implementation can be registered; otherwise, an {@link IllegalStateException} will be
    * thrown.

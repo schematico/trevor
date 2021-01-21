@@ -43,6 +43,10 @@ public class ConnectPayload extends OwnedPayload {
    * Wraps the {@link ConnectPayload} constructor.
    *
    * @see ConnectPayload#ConnectPayload(String, UUID, String)
+   *
+   * @param source the instance source
+   * @param uuid the user uuid
+   * @param address the user address
    */
   public static ConnectPayload of(String source, UUID uuid, String address) {
     return new ConnectPayload(source, uuid, address);

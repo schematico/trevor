@@ -22,7 +22,7 @@ public interface DatabaseProxy {
   /**
    * Announces a {@link NetworkPayload} on the network using the {@link DatabaseIntercom}.
    *
-   * <br/><br/>
+   * <br><br>
    *
    * This method differs from {@link DatabaseProxy#post(String channel, NetworkPayload event)} as
    * it requires an open {@link DatabaseConnection} to be provided. This method is used to
