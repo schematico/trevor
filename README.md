@@ -1,4 +1,5 @@
 # Trevor (n.) \tɹˈɛvə\
+[![Build Status](https://ci.schemati.co/buildStatus/icon?job=trevor)](https://ci.schemati.co/job/trevor/)
 ![Java CI with Gradle](https://github.com/schematico/trevor/workflows/Java%20CI%20with%20Gradle/badge.svg)
 [![Discord](https://img.shields.io/discord/548983491157819413.svg?logo=discord&label=)](https://discord.gg/7AEgrbE)
 
