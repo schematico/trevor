@@ -4,6 +4,7 @@ import co.schemati.trevor.api.data.User;
 import co.schemati.trevor.api.network.payload.NetworkPayload;
 
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * Represents a proxy between the {@link Database} and the
@@ -41,9 +42,9 @@ public interface DatabaseProxy {
    *
    * @param user the user
    *
-   * @return {@link ConnectResult}
+   * @return future wrapped {@link ConnectResult}
    */
-  ConnectResult onPlayerConnect(User user);
+  CompletableFuture<ConnectResult> onPlayerConnect(User user);
 
   /**
    * Notifies the {@link co.schemati.trevor.api.TrevorAPI} implementation that a {@link User} has

@@ -29,7 +29,7 @@ public class VelocityListener {
     VelocityUser user = new VelocityUser(player);
 
     DatabaseProxyImpl.ConnectResult result =
-            plugin.getCommon().getDatabaseProxy().onPlayerConnect(user);
+            plugin.getCommon().getDatabaseProxy().onPlayerConnect(user).join();
 
     if (!result.isAllowed()) {
       result.getMessage().ifPresent(message ->

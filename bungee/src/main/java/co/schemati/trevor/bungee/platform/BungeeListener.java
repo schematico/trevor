@@ -30,14 +30,16 @@ public class BungeeListener implements Listener {
     BungeeUser user = new BungeeUser(connection.getUniqueId(),
             connection.getSocketAddress().toString());
 
-    DatabaseProxyImpl.ConnectResult result = plugin.getCommon()
-            .getDatabaseProxy().onPlayerConnect(user);
+    event.registerIntent(plugin);
 
-    if (!result.isAllowed()) {
-      event.setCancelled(true);
+    plugin.getCommon().getDatabaseProxy().onPlayerConnect(user).thenAccept(result -> {
+      if (!result.isAllowed()) {
+        event.setCancelled(true);
+        result.getMessage().ifPresent(message -> event.setCancelReason(serialize(message)));
+      }
 
-      result.getMessage().ifPresent(message -> event.setCancelReason(serialize(message)));
-    }
+      event.completeIntent(plugin);
+    });
   }
 
   @EventHandler
