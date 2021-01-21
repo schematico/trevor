@@ -11,7 +11,7 @@ allprojects {
     apply plugin: 'com.github.johnrengelman.shadow'
     apply plugin: 'java'
 
-	group 'co.schemati'
+	group 'co.schemati.trevor'
 	version '2.0.0-SNAPSHOT'
 
 	sourceCompatibility = 1.8
