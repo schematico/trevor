@@ -6,6 +6,11 @@ package co.schemati.trevor.api.database;
 public interface DatabaseIntercom extends Runnable {
 
   /**
+   * Initializes the intercom connection.
+   */
+  void init();
+
+  /**
    * Subscribes the {@link DatabaseIntercom} to the provided channel.
    *
    * @param channel the channel

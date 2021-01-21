@@ -12,6 +12,7 @@ import co.schemati.trevor.common.util.Protocol;
 
 import java.util.Arrays;
 import java.util.Set;
+import java.util.concurrent.Future;
 
 public class RedisIntercom extends JedisPubSub implements DatabaseIntercom {
 
@@ -23,6 +24,8 @@ public class RedisIntercom extends JedisPubSub implements DatabaseIntercom {
   private final String instance;
   private final Set<String> channels = Sets.newHashSet();
 
+  private Future<?> task;
+
   public RedisIntercom(Platform platform, RedisDatabase database, DatabaseProxy proxy, Gson gson) {
     this.platform = platform;
     this.database = database;
@@ -33,11 +36,16 @@ public class RedisIntercom extends JedisPubSub implements DatabaseIntercom {
   }
 
   @Override
-  public void run() {
+  public void init() {
     channels.add(Keys.CHANNEL_INSTANCE.with(instance));
     channels.add(Keys.CHANNEL_SERVERS.of());
     channels.add(Keys.CHANNEL_DATA.of());
 
+    this.task = database.getExecutor().submit(this);
+  }
+
+  @Override
+  public void run() {
     database.getResource().subscribe(this, channels.toArray(new String[0]));
   }
 
@@ -52,6 +60,8 @@ public class RedisIntercom extends JedisPubSub implements DatabaseIntercom {
   }
 
   public void kill() {
+    task.cancel(true);
+
     channels.forEach(super::unsubscribe);
     channels.clear();
   }

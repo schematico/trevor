@@ -23,8 +23,7 @@ public class RedisDatabase implements Database {
   private final ScheduledExecutorService executor;
 
   private RedisIntercom intercom;
-  private Future<?> intercomTask;
-  private Future<?> heartbeatTask;
+  private Future<?> heartbeat;
 
   public RedisDatabase(Platform platform, InstanceData data, JedisPool pool, Gson gson) {
     this.platform = platform;
@@ -43,12 +42,11 @@ public class RedisDatabase implements Database {
       return false;
     }
 
+    this.heartbeat = executor.scheduleAtFixedRate(this::beat, 5,5, TimeUnit.SECONDS);
+
     this.intercom = new RedisIntercom(platform, this, proxy, gson);
 
-    this.intercomTask = executor.submit(intercom);
-
-    this.heartbeatTask =
-            executor.scheduleAtFixedRate(this::beat, 5,5, TimeUnit.SECONDS);
+    intercom.init();
 
     return true;
   }
@@ -89,10 +87,11 @@ public class RedisDatabase implements Database {
 
   @Override
   public void kill() {
-    if (heartbeatTask != null) {
-      heartbeatTask.cancel(true);
-      intercomTask.cancel(true);
+    if (heartbeat != null) {
+      heartbeat.cancel(true);
     }
+
+    intercom.kill();
   }
 
   protected Jedis getResource() {
