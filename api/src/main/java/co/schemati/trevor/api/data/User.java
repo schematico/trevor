@@ -5,20 +5,26 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * Represents a player
+ * Represents a player.
  */
 public abstract class User {
 
   private final UUID uuid;
   private final String address;
 
+  /**
+   * Construct a new user.
+   *
+   * @param uuid the user uuid
+   * @param address the user address
+   */
   protected User(UUID uuid, String address) {
     this.uuid = uuid;
     this.address = address;
   }
 
   /**
-   * The user's uuid
+   * The user's uuid.
    *
    * @return uuid
    */
@@ -27,7 +33,7 @@ public abstract class User {
   }
 
   /**
-   * The address the user connected with
+   * The address the user connected with.
    *
    * @return address
    */

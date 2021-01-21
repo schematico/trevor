@@ -51,7 +51,7 @@ public class RedisIntercom extends JedisPubSub implements DatabaseIntercom {
     super.unsubscribe(channel);
   }
 
-  public void destroy() {
+  public void kill() {
     channels.forEach(super::unsubscribe);
     channels.clear();
   }
