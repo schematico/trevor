@@ -1,17 +1,11 @@
-# This workflow will build a Java project with Gradle
-# For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-gradle
-
 name: Java CI with Gradle
 
 on:
   push:
     branches: [ master ]
-  pull_request:
-    branches: [ master ]
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
@@ -24,10 +18,13 @@ jobs:
       run: chmod +x gradlew
     - name: Build with Gradle
       run: ./gradlew build
-    - name: Upload artifact
+    - name: Upload Velocity artifact
       uses: actions/upload-artifact@v1.0.0
       with:
-        # Artifact name
-        name: Trevor
-        # Directory containing files to upload
-        path: build/libs/
+        name: Trevor Velocity
+        path: velocity/build/libs/
+    - name: Upload BungeeCord artifact
+      uses: actions/upload-artifact@v1.0.0
+      with:
+        name: Trevor BungeeCord
+        path: bungee/build/libs/
