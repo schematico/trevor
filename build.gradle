@@ -12,7 +12,7 @@ allprojects {
     apply plugin: 'java'
 
 	group 'co.schemati.trevor'
-	version '2.0.0-SNAPSHOT'
+	version '2.0.0'
 
 	sourceCompatibility = 1.8
 	targetCompatibility = 1.8
