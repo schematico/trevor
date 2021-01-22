@@ -24,7 +24,7 @@ jobs:
         name: Trevor Velocity
         path: velocity/build/libs/
     - name: Upload BungeeCord artifact
-        uses: actions/upload-artifact@v1.0.0
-        with:
-          name: Trevor BungeeCord
-          path: bungee/build/libs/
+      uses: actions/upload-artifact@v1.0.0
+      with:
+        name: Trevor BungeeCord
+        path: bungee/build/libs/
