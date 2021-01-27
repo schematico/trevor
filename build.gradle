@@ -13,6 +13,7 @@ allprojects {
 
 	group 'co.schemati.trevor'
 	version '2.0.1-SNAPSHOT'
+    description 'Trevor is a platform-independent solution for cross-instance proxy communication'
 
 	sourceCompatibility = 1.8
 	targetCompatibility = 1.8
