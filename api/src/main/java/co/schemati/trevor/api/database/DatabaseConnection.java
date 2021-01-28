@@ -3,10 +3,12 @@ package co.schemati.trevor.api.database;
 import co.schemati.trevor.api.data.User;
 import co.schemati.trevor.api.instance.InstanceData;
 import co.schemati.trevor.api.network.payload.DisconnectPayload;
+import co.schemati.trevor.api.util.Keys;
 
 import java.io.Closeable;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * Represents a connection to a remote database, created using a {@link Database} reference.
@@ -94,6 +96,13 @@ public interface DatabaseConnection extends Closeable {
    * @return the network players' uuids
    */
   Set<String> getNetworkPlayers();
+
+  /**
+   * Checks the remote database for all known connected players on the given backend server.
+   *
+   * @return the server players' uuids
+   */
+  Set<String> getServerPlayers(String server);
 
   /**
    * Check the remote database for the network player count.

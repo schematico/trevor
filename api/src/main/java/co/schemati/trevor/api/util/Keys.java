@@ -14,7 +14,9 @@ public enum Keys {
 
   INSTANCE_PLAYERS("instance:{}:players"),
 
-  PLAYER_DATA("player:{}");
+  PLAYER_DATA("player:{}"),
+
+  SERVER_PLAYERS("server:{}:players");
 
   private final String key;
 

@@ -7,10 +7,13 @@ import co.schemati.trevor.api.data.User;
 import co.schemati.trevor.api.database.DatabaseConnection;
 import co.schemati.trevor.api.network.payload.DisconnectPayload;
 import co.schemati.trevor.api.instance.InstanceData;
+import redis.clients.jedis.ScanParams;
 
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class RedisConnection implements DatabaseConnection {
 
@@ -75,6 +78,11 @@ public class RedisConnection implements DatabaseConnection {
       connection.hdel(Keys.PLAYER_DATA.with(uuid.toString()), "server", "ip", "instance");
       connection.hset(Keys.PLAYER_DATA.with(uuid.toString()), "lastOnline",
               String.valueOf(timestamp));
+
+      String previous = connection.hget(Keys.PLAYER_DATA.with(uuid.toString()), "server");
+      if (previous != null) {
+        connection.srem(Keys.SERVER_PLAYERS.with(previous), uuid.toString());
+      }
     }
 
     return DisconnectPayload.of(instance, uuid, timestamp);
@@ -82,6 +90,12 @@ public class RedisConnection implements DatabaseConnection {
 
   @Override
   public void setServer(User user, String server) {
+    String previous = connection.hget(Keys.PLAYER_DATA.with(user), "server");
+    if (previous != null) {
+      connection.srem(Keys.SERVER_PLAYERS.with(previous), user.uuid().toString());
+    }
+
+    connection.sadd(Keys.SERVER_PLAYERS.with(server), user.uuid().toString());
     connection.hset(Keys.PLAYER_DATA.with(user), "server", server);
   }
 
@@ -103,6 +117,11 @@ public class RedisConnection implements DatabaseConnection {
   @Override
   public Set<String> getNetworkPlayers() {
     return connection.smembers(Keys.INSTANCE_PLAYERS.with(instance));
+  }
+
+  @Override
+  public Set<String> getServerPlayers(String server) {
+    return connection.smembers(Keys.SERVER_PLAYERS.with(server));
   }
 
   @Override
