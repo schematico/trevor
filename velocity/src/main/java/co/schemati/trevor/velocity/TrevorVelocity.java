@@ -31,10 +31,6 @@ public class TrevorVelocity {
   @DataDirectory
   private Path dataFolder;
 
-  public TrevorVelocity() {
-    System.out.println("Trevor construct");
-  }
-
   @Subscribe
   public void onProxyStart(ProxyInitializeEvent event) {
     this.platform = new VelocityPlatform(this);
