@@ -61,6 +61,8 @@ public class ServerChangePayload extends OwnedPayload {
    * @param uuid the user uuid
    * @param server the new server
    * @param previousServer the previous server
+   *
+   * @return the new {@link ServerChangePayload}
    */
   public static ServerChangePayload of(String source, UUID uuid, String server,
                                        String previousServer) {
