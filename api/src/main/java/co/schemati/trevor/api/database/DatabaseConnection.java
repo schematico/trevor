@@ -100,6 +100,8 @@ public interface DatabaseConnection extends Closeable {
   /**
    * Checks the remote database for all known connected players on the given backend server.
    *
+   * @param server the backend server
+   *
    * @return the server players' uuids
    */
   Set<String> getServerPlayers(String server);
