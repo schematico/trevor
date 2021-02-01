@@ -73,16 +73,15 @@ public class RedisConnection implements DatabaseConnection {
   @Override
   public DisconnectPayload destroy(UUID uuid) {
     long timestamp = System.currentTimeMillis();
-    if (connection.sismember(Keys.INSTANCE_PLAYERS.with(instance), uuid.toString())) {
-      connection.srem(Keys.INSTANCE_PLAYERS.with(instance), uuid.toString());
-      connection.hdel(Keys.PLAYER_DATA.with(uuid.toString()), "server", "ip", "instance");
-      connection.hset(Keys.PLAYER_DATA.with(uuid.toString()), "lastOnline",
-              String.valueOf(timestamp));
 
-      String previous = connection.hget(Keys.PLAYER_DATA.with(uuid.toString()), "server");
-      if (previous != null) {
-        connection.srem(Keys.SERVER_PLAYERS.with(previous), uuid.toString());
-      }
+    connection.srem(Keys.INSTANCE_PLAYERS.with(instance), uuid.toString());
+    connection.hdel(Keys.PLAYER_DATA.with(uuid.toString()), "server", "ip", "instance");
+    connection.hset(Keys.PLAYER_DATA.with(uuid.toString()), "lastOnline",
+            String.valueOf(timestamp));
+
+    String previous = connection.hget(Keys.PLAYER_DATA.with(uuid.toString()), "server");
+    if (previous != null) {
+      connection.srem(Keys.SERVER_PLAYERS.with(previous), uuid.toString());
     }
 
     return DisconnectPayload.of(instance, uuid, timestamp);
