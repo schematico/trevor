@@ -26,8 +26,8 @@ allprojects {
         jedisVersion = '3.2.0'
 
         // Platform versions
-		bungeeVersion = '1.15-SNAPSHOT'
-		velocityVersion = '1.1.0-SNAPSHOT'
+		bungeeVersion = '1.16-R0.5-SNAPSHOT'
+		velocityVersion = '1.1.4'
 	}
 	
 	repositories {
