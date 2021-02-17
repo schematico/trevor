@@ -50,17 +50,15 @@ public class TrevorCommon implements TrevorAPI {
 
   public boolean stop() {
     if (database != null) {
-      DatabaseConnection connection = database.open().join();
-
-      connection.deleteHeartbeat();
-
-      if (connection.getNetworkPlayerCount() > 0) {
+      database.open().thenAccept(connection -> {
         connection.getNetworkPlayers().forEach(uuid -> {
           DisconnectPayload payload = connection.destroy(UUID.fromString(uuid));
 
           connection.publish(Keys.CHANNEL_DATA.of(), Protocol.serialize(payload, gson));
         });
-      }
+
+        connection.deleteHeartbeat();
+      }).join();
 
       database.kill();
     }
