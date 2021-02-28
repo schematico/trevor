@@ -18,7 +18,7 @@ public interface DatabaseIntercom extends Runnable {
   void add(String... channel);
 
   /**
-   * Unsubscribes the {@link DatabaseIntercom} to the provided channel.
+   * Unsubscribes the {@link DatabaseIntercom} from the provided channel.
    *
    * @param channel the channel
    */
