@@ -40,10 +40,14 @@ public abstract class NetworkPayload<S> {
   /**
    * Allows the {@link EventProcessor} to wrap the payload to allow compatibility with platform
    * event buses.
+   * NOTE: If the process method is not overridden, it defaults to calling
+   * {@link EventProcessor#onMessage(NetworkPayload)}.
    *
    * @param processor the event processor
    *
    * @return the event action
    */
-  public abstract EventProcessor.EventAction<? extends NetworkEvent> process(EventProcessor processor);
+  public EventProcessor.EventAction<? extends NetworkEvent> process(EventProcessor processor) {
+    return processor.onMessage(this);
+  }
 }
