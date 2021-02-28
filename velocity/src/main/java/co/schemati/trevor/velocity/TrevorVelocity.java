@@ -1,5 +1,7 @@
 package co.schemati.trevor.velocity;
 
+import co.schemati.trevor.common.TrevorCommon;
+import co.schemati.trevor.velocity.platform.VelocityListener;
 import co.schemati.trevor.velocity.platform.VelocityPlatform;
 import com.google.inject.Inject;
 import com.velocitypowered.api.event.Subscribe;
@@ -9,8 +11,6 @@ import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.ProxyServer;
 import org.slf4j.Logger;
-import co.schemati.trevor.common.TrevorCommon;
-import co.schemati.trevor.velocity.platform.VelocityListener;
 
 import java.nio.file.Path;
 

@@ -1,11 +1,11 @@
 package co.schemati.trevor.common.platform;
 
-import co.schemati.trevor.common.database.redis.RedisConfiguration;
-import ninja.leaping.configurate.ConfigurationNode;
 import co.schemati.trevor.api.data.Platform;
 import co.schemati.trevor.api.database.DatabaseConfiguration;
 import co.schemati.trevor.api.instance.InstanceConfiguration;
+import co.schemati.trevor.common.database.redis.RedisConfiguration;
 import co.schemati.trevor.common.io.Configuration;
+import ninja.leaping.configurate.ConfigurationNode;
 
 import java.io.File;
 

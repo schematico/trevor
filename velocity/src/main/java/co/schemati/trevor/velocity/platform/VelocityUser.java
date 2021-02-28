@@ -1,7 +1,7 @@
 package co.schemati.trevor.velocity.platform;
 
-import com.velocitypowered.api.proxy.Player;
 import co.schemati.trevor.api.data.User;
+import com.velocitypowered.api.proxy.Player;
 
 import java.util.UUID;
 

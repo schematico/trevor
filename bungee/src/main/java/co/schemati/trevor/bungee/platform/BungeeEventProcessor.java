@@ -1,16 +1,16 @@
 package co.schemati.trevor.bungee.platform;
 
+import co.schemati.trevor.api.network.event.EventProcessor;
+import co.schemati.trevor.api.network.payload.ConnectPayload;
+import co.schemati.trevor.api.network.payload.DisconnectPayload;
+import co.schemati.trevor.api.network.payload.NetworkPayload;
+import co.schemati.trevor.api.network.payload.ServerChangePayload;
 import co.schemati.trevor.bungee.TrevorBungee;
 import co.schemati.trevor.bungee.platform.event.BungeeNetworkConnectEvent;
 import co.schemati.trevor.bungee.platform.event.BungeeNetworkDisconnectEvent;
 import co.schemati.trevor.bungee.platform.event.BungeeNetworkEvent;
 import co.schemati.trevor.bungee.platform.event.BungeeNetworkMessageEvent;
 import co.schemati.trevor.bungee.platform.event.BungeeNetworkServerChangeEvent;
-import co.schemati.trevor.api.network.payload.ConnectPayload;
-import co.schemati.trevor.api.network.payload.DisconnectPayload;
-import co.schemati.trevor.api.network.payload.NetworkPayload;
-import co.schemati.trevor.api.network.payload.ServerChangePayload;
-import co.schemati.trevor.api.network.event.EventProcessor;
 
 import java.util.concurrent.CompletableFuture;
 

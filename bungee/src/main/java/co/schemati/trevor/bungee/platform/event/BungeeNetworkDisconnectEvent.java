@@ -1,7 +1,7 @@
 package co.schemati.trevor.bungee.platform.event;
 
-import co.schemati.trevor.api.network.payload.DisconnectPayload;
 import co.schemati.trevor.api.network.event.NetworkDisconnectEvent;
+import co.schemati.trevor.api.network.payload.DisconnectPayload;
 
 import java.util.UUID;
 

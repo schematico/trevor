@@ -1,8 +1,8 @@
 package co.schemati.trevor.bungee.platform;
 
-import co.schemati.trevor.bungee.TrevorBungee;
-import co.schemati.trevor.api.util.Strings;
 import co.schemati.trevor.api.network.event.EventProcessor;
+import co.schemati.trevor.api.util.Strings;
+import co.schemati.trevor.bungee.TrevorBungee;
 import co.schemati.trevor.common.platform.AbstractPlatformBase;
 
 public class BungeePlatform extends AbstractPlatformBase {

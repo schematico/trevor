@@ -12,7 +12,6 @@ import net.md_5.bungee.api.event.ProxyPingEvent;
 import net.md_5.bungee.api.event.ServerConnectedEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
-import co.schemati.trevor.common.proxy.DatabaseProxyImpl;
 
 public class BungeeListener implements Listener {
 

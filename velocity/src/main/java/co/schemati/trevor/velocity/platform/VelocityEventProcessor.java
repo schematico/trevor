@@ -1,16 +1,16 @@
 package co.schemati.trevor.velocity.platform;
 
+import co.schemati.trevor.api.network.event.EventProcessor;
+import co.schemati.trevor.api.network.payload.ConnectPayload;
+import co.schemati.trevor.api.network.payload.DisconnectPayload;
+import co.schemati.trevor.api.network.payload.NetworkPayload;
+import co.schemati.trevor.api.network.payload.ServerChangePayload;
 import co.schemati.trevor.velocity.TrevorVelocity;
 import co.schemati.trevor.velocity.platform.event.VelocityNetworkConnectEvent;
 import co.schemati.trevor.velocity.platform.event.VelocityNetworkDisconnectEvent;
 import co.schemati.trevor.velocity.platform.event.VelocityNetworkEvent;
 import co.schemati.trevor.velocity.platform.event.VelocityNetworkMessageEvent;
 import co.schemati.trevor.velocity.platform.event.VelocityNetworkServerChangeEvent;
-import co.schemati.trevor.api.network.payload.ConnectPayload;
-import co.schemati.trevor.api.network.payload.DisconnectPayload;
-import co.schemati.trevor.api.network.payload.NetworkPayload;
-import co.schemati.trevor.api.network.payload.ServerChangePayload;
-import co.schemati.trevor.api.network.event.EventProcessor;
 
 public class VelocityEventProcessor implements EventProcessor {
 

@@ -9,6 +9,17 @@ import java.util.concurrent.ExecutorService;
 public interface Database {
 
   /**
+   * The channel to post payload data to.
+   */
+  String CHANNEL_DATA = "trevor:data";
+  /**
+   * The channel to post information to a specific instance.
+   *
+   * NOTE: Not yet implemented.
+   */
+  String CHANNEL_INSTANCE = "trevor:{}";
+
+  /**
    * Initializes the {@link Database} using the provided {@link DatabaseProxy}.
    *
    * @param proxy the database proxy

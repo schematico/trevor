@@ -1,7 +1,7 @@
 package co.schemati.trevor.api.data;
 
-import co.schemati.trevor.api.instance.InstanceConfiguration;
 import co.schemati.trevor.api.database.DatabaseConfiguration;
+import co.schemati.trevor.api.instance.InstanceConfiguration;
 import co.schemati.trevor.api.network.event.EventProcessor;
 import co.schemati.trevor.api.util.Strings;
 

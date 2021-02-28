@@ -1,18 +1,20 @@
 package co.schemati.trevor.common.database.redis;
 
+import co.schemati.trevor.api.data.Platform;
+import co.schemati.trevor.api.database.DatabaseIntercom;
+import co.schemati.trevor.api.database.DatabaseProxy;
+import co.schemati.trevor.api.util.Strings;
+import co.schemati.trevor.common.util.Protocol;
 import com.google.common.collect.Sets;
 import com.google.gson.Gson;
 import redis.clients.jedis.JedisPubSub;
-import co.schemati.trevor.api.data.Platform;
-import co.schemati.trevor.api.network.payload.NetworkPayload;
-import co.schemati.trevor.api.util.Keys;
-import co.schemati.trevor.api.database.DatabaseIntercom;
-import co.schemati.trevor.api.database.DatabaseProxy;
-import co.schemati.trevor.common.util.Protocol;
 
 import java.util.Arrays;
 import java.util.Set;
 import java.util.concurrent.Future;
+
+import static co.schemati.trevor.api.database.Database.CHANNEL_DATA;
+import static co.schemati.trevor.api.database.Database.CHANNEL_INSTANCE;
 
 public class RedisIntercom extends JedisPubSub implements DatabaseIntercom {
 
@@ -37,9 +39,8 @@ public class RedisIntercom extends JedisPubSub implements DatabaseIntercom {
 
   @Override
   public void init() {
-    channels.add(Keys.CHANNEL_INSTANCE.with(instance));
-    channels.add(Keys.CHANNEL_SERVERS.of());
-    channels.add(Keys.CHANNEL_DATA.of());
+    channels.add(Strings.replace(CHANNEL_INSTANCE, instance));
+    channels.add(CHANNEL_DATA);
 
     this.task = database.getExecutor().submit(this);
   }
@@ -70,7 +71,7 @@ public class RedisIntercom extends JedisPubSub implements DatabaseIntercom {
   public void onMessage(String channel, String message) {
     database.getExecutor().submit(() -> {
       if (message.trim().length() > 0) {
-        if (channel.equals(Keys.CHANNEL_DATA.of())) {
+        if (channel.equals(CHANNEL_DATA)) {
           proxy.onNetworkIntercom(channel, message);
         } else {
           Protocol.deserialize(message, gson).ifPresent(payload ->

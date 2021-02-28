@@ -1,5 +1,6 @@
 package co.schemati.trevor.velocity.platform;
 
+import co.schemati.trevor.common.proxy.DatabaseProxyImpl;
 import co.schemati.trevor.velocity.TrevorVelocity;
 import com.velocitypowered.api.event.PostOrder;
 import com.velocitypowered.api.event.ResultedEvent;
@@ -11,7 +12,6 @@ import com.velocitypowered.api.event.proxy.ProxyPingEvent;
 import com.velocitypowered.api.proxy.Player;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
-import co.schemati.trevor.common.proxy.DatabaseProxyImpl;
 
 public class VelocityListener {
 

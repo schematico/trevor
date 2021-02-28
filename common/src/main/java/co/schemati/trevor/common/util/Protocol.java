@@ -1,7 +1,7 @@
 package co.schemati.trevor.common.util;
 
-import com.google.gson.Gson;
 import co.schemati.trevor.api.network.payload.NetworkPayload;
+import com.google.gson.Gson;
 
 import java.util.Optional;
 

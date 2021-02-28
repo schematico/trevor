@@ -4,7 +4,10 @@ import co.schemati.trevor.api.data.User;
 
 /**
  * A utility class used to store all database keys.
+ *
+ * @deprecated implementation detail
  */
+@Deprecated
 public enum Keys {
   CHANNEL_DATA("trevor:data"),
   CHANNEL_INSTANCE("trevor:{}"),

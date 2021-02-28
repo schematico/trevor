@@ -46,4 +46,8 @@ allprojects {
         }
         compile "redis.clients:jedis:${jedisVersion}"
     }
+
+    tasks.named("build") {
+        dependsOn(tasks.named("shadowJar"))
+    }
 }

@@ -1,19 +1,29 @@
 package co.schemati.trevor.common.database.redis;
 
-import com.google.gson.Gson;
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.exceptions.JedisConnectionException;
 import co.schemati.trevor.api.data.Platform;
 import co.schemati.trevor.api.database.Database;
 import co.schemati.trevor.api.database.DatabaseConnection;
 import co.schemati.trevor.api.database.DatabaseIntercom;
 import co.schemati.trevor.api.database.DatabaseProxy;
 import co.schemati.trevor.api.instance.InstanceData;
+import com.google.gson.Gson;
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.exceptions.JedisConnectionException;
 
-import java.util.concurrent.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class RedisDatabase implements Database {
+
+  public static final String HEARTBEAT = "heartbeat";
+  public static final String INSTANCE_PLAYERS = "instance:{}:players";
+  public static final String SERVER_PLAYERS = "server:{}:players";
+  public static final String PLAYER_DATA = "player:{}";
 
   private final Platform platform;
   private final String instance;

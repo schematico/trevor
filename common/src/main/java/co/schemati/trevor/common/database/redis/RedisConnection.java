@@ -1,19 +1,25 @@
 package co.schemati.trevor.common.database.redis;
 
-import com.google.common.collect.ImmutableList;
-import redis.clients.jedis.Jedis;
-import co.schemati.trevor.api.util.Keys;
 import co.schemati.trevor.api.data.User;
 import co.schemati.trevor.api.database.DatabaseConnection;
-import co.schemati.trevor.api.network.payload.DisconnectPayload;
 import co.schemati.trevor.api.instance.InstanceData;
-import redis.clients.jedis.ScanParams;
+import co.schemati.trevor.api.network.payload.DisconnectPayload;
+import com.google.common.collect.ImmutableList;
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.ScanResult;
 
+import javax.annotation.Nullable;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
+
+import static co.schemati.trevor.api.util.Strings.replace;
+import static co.schemati.trevor.common.database.redis.RedisDatabase.HEARTBEAT;
+import static co.schemati.trevor.common.database.redis.RedisDatabase.INSTANCE_PLAYERS;
+import static co.schemati.trevor.common.database.redis.RedisDatabase.PLAYER_DATA;
+import static co.schemati.trevor.common.database.redis.RedisDatabase.SERVER_PLAYERS;
 
 public class RedisConnection implements DatabaseConnection {
 
@@ -25,15 +31,11 @@ public class RedisConnection implements DatabaseConnection {
     this.connection = connection;
   }
 
-  public Jedis getConnection() {
-    return connection;
-  }
-
   @Override
   public void beat() {
     long timestamp = System.currentTimeMillis();
 
-    connection.hset(Keys.DATABASE_HEARTBEAT.of(), instance, String.valueOf(timestamp));
+    connection.hset(HEARTBEAT, instance, String.valueOf(timestamp));
   }
 
   @Override
@@ -43,13 +45,13 @@ public class RedisConnection implements DatabaseConnection {
     ImmutableList.Builder<String> builder = ImmutableList.builder();
     int playerCount = 0;
 
-    Map<String, String> heartbeats = connection.hgetAll(Keys.DATABASE_HEARTBEAT.of());
+    Map<String, String> heartbeats = connection.hgetAll(HEARTBEAT);
     for (Map.Entry<String, String> entry : heartbeats.entrySet()) {
       long lastBeat = Long.parseLong(entry.getValue());
       if (timestamp <= lastBeat + (30 * 1000)) { // 30 seconds
         builder.add(entry.getKey());
 
-        playerCount += connection.scard(Keys.INSTANCE_PLAYERS.with(entry.getKey()));
+        playerCount += connection.scard(replace(INSTANCE_PLAYERS, entry));
       } else {
         // TODO: Potentially notify that the instance could be dead.
       }
@@ -60,12 +62,12 @@ public class RedisConnection implements DatabaseConnection {
 
   @Override
   public boolean create(User user) {
-    if (connection.sismember(Keys.INSTANCE_PLAYERS.with(instance), user.uuid().toString())) {
+    if (isOnline(user)) {
       return false;
     }
 
-    connection.hmset(Keys.PLAYER_DATA.with(user), user.toDatabaseMap(instance));
-    connection.sadd(Keys.INSTANCE_PLAYERS.with(instance), user.uuid().toString());
+    connection.hmset(replace(PLAYER_DATA, user), user.toDatabaseMap(instance));
+    connection.sadd(replace(INSTANCE_PLAYERS, user));
 
     return true;
   }
@@ -74,68 +76,101 @@ public class RedisConnection implements DatabaseConnection {
   public DisconnectPayload destroy(UUID uuid) {
     long timestamp = System.currentTimeMillis();
 
-    connection.srem(Keys.INSTANCE_PLAYERS.with(instance), uuid.toString());
-    connection.hdel(Keys.PLAYER_DATA.with(uuid.toString()), "server", "ip", "instance");
-    connection.hset(Keys.PLAYER_DATA.with(uuid.toString()), "lastOnline",
-            String.valueOf(timestamp));
+    connection.srem(replace(INSTANCE_PLAYERS, uuid));
+    connection.hdel(replace(PLAYER_DATA, uuid), "server", "ip", "instance");
+    connection.hset(replace(PLAYER_DATA, uuid), "lastOnline", String.valueOf(timestamp));
 
-    String previous = connection.hget(Keys.PLAYER_DATA.with(uuid.toString()), "server");
-    if (previous != null) {
-      connection.srem(Keys.SERVER_PLAYERS.with(previous), uuid.toString());
-    }
+    setServer(uuid, null);
 
     return DisconnectPayload.of(instance, uuid, timestamp);
   }
 
   @Override
-  public void setServer(User user, String server) {
-    String previous = connection.hget(Keys.PLAYER_DATA.with(user), "server");
+  public void setServer(UUID uuid, @Nullable String server) {
+    String user = uuid.toString();
+    String previous = connection.hget(replace(PLAYER_DATA, user), "server");
     if (previous != null) {
-      connection.srem(Keys.SERVER_PLAYERS.with(previous), user.uuid().toString());
+      connection.srem(replace(SERVER_PLAYERS, previous), user);
     }
 
-    connection.sadd(Keys.SERVER_PLAYERS.with(server), user.uuid().toString());
-    connection.hset(Keys.PLAYER_DATA.with(user), "server", server);
+    if (server != null) {
+      connection.sadd(replace(SERVER_PLAYERS, server), user);
+      connection.hset(replace(PLAYER_DATA, user), "server", server);
+    }
+  }
+
+  @Override
+  public void setServer(User user, @Nullable String server) {
+    setServer(user.uuid(), server);
   }
 
   @Override
   public boolean isOnline(User user) {
-    return connection.sismember(Keys.INSTANCE_PLAYERS.with(instance), user.uuid().toString());
+    return connection.exists(replace(PLAYER_DATA, user));
   }
 
   @Override
   public boolean isInstanceAlive() {
     long timestamp = System.currentTimeMillis();
-    if (connection.hexists(Keys.DATABASE_HEARTBEAT.of(), instance)) {
-      long lastBeat = Long.parseLong(connection.hget(Keys.DATABASE_HEARTBEAT.of(), instance));
+    if (connection.hexists(HEARTBEAT, instance)) {
+      long lastBeat = Long.parseLong(connection.hget(HEARTBEAT, instance));
       return timestamp >= lastBeat + (20 * 1000); // 20 seconds in terms of milliseconds
     }
     return false;
   }
 
   @Override
-  public Set<String> getNetworkPlayers() {
-    return connection.smembers(Keys.INSTANCE_PLAYERS.with(instance));
+  public Set<String> getServerPlayers(String server) {
+    return connection.smembers(replace(SERVER_PLAYERS, server));
   }
 
   @Override
-  public Set<String> getServerPlayers(String server) {
-    return connection.smembers(Keys.SERVER_PLAYERS.with(server));
+  public long getServerPlayerCount(String server) {
+    return connection.scard(replace(SERVER_PLAYERS, server));
   }
 
+  @Override
+  public Set<String> getNetworkPlayers() {
+    // TODO: Consider caching this to be updated with the heartbeat.
+    Set<String> players = new HashSet<>();
+    ScanResult<String> scanner = connection.scan("instance");
+    while (!scanner.isCompleteIteration()) {
+      List<String> result = scanner.getResult();
+
+      result.forEach(instance ->
+              players.addAll(connection.smembers(replace(INSTANCE_PLAYERS, instance)))
+      );
+    }
+
+    return players;
+  }
+
+  @Deprecated
   @Override
   public long getNetworkPlayerCount() {
-    return connection.scard(Keys.INSTANCE_PLAYERS.with(instance));
-  }
+    long count = 0;
+    ScanResult<String> scanner = connection.scan("instance");
+    while (!scanner.isCompleteIteration()) {
+      count += scanner.getResult().size();
+    }
 
-  @Override
-  public void deleteHeartbeat() {
-    connection.hdel("heartbeat", instance);
+    return count;
   }
 
   @Override
   public void publish(String channel, String message) {
     connection.publish(channel, message);
+  }
+
+  @Deprecated
+  @Override
+  public void deleteHeartbeat() {
+    shutdown();
+  }
+
+  @Override
+  public void shutdown() {
+    connection.hdel(HEARTBEAT, instance);
   }
 
   @Override

@@ -1,7 +1,7 @@
 package co.schemati.trevor.bungee.platform;
 
-import net.md_5.bungee.api.connection.ProxiedPlayer;
 import co.schemati.trevor.api.data.User;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 import java.util.UUID;
 

@@ -1,11 +1,11 @@
 package co.schemati.trevor.common.database.redis;
 
-import com.google.gson.Gson;
-import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.JedisPoolConfig;
 import co.schemati.trevor.api.data.Platform;
 import co.schemati.trevor.api.database.DatabaseConfiguration;
 import co.schemati.trevor.api.instance.InstanceData;
+import com.google.gson.Gson;
+import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.JedisPoolConfig;
 
 public class RedisConfiguration implements DatabaseConfiguration {
 

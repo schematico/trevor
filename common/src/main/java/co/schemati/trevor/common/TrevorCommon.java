@@ -1,24 +1,19 @@
 package co.schemati.trevor.common;
 
-import com.google.gson.Gson;
 import co.schemati.trevor.api.TrevorAPI;
 import co.schemati.trevor.api.TrevorService;
-import co.schemati.trevor.api.database.DatabaseConnection;
-import co.schemati.trevor.api.network.payload.DisconnectPayload;
-import co.schemati.trevor.api.instance.InstanceData;
-import co.schemati.trevor.api.database.Database;
-import co.schemati.trevor.api.util.Keys;
-import co.schemati.trevor.common.proxy.DatabaseProxyImpl;
 import co.schemati.trevor.api.data.Platform;
-import co.schemati.trevor.common.util.Protocol;
-
-import java.util.UUID;
+import co.schemati.trevor.api.database.Database;
+import co.schemati.trevor.api.database.DatabaseConnection;
+import co.schemati.trevor.api.instance.InstanceData;
+import co.schemati.trevor.common.proxy.DatabaseProxyImpl;
+import com.google.gson.Gson;
 
 public class TrevorCommon implements TrevorAPI {
 
-  private final Platform platform;
+  private static Gson gson;
 
-  private Gson gson;
+  private final Platform platform;
 
   private Database database;
   private DatabaseProxyImpl proxy;
@@ -33,13 +28,13 @@ public class TrevorCommon implements TrevorAPI {
     TrevorService.setAPI(this);
 
     // TODO: Verify instance configuration values before pool creation
-    this.gson = new Gson();
+    gson = new Gson();
 
     this.data = new InstanceData();
 
     this.database = platform.getDatabaseConfiguration().create(platform, data, gson);
 
-    this.proxy = new DatabaseProxyImpl(platform, database, gson);
+    this.proxy = new DatabaseProxyImpl(platform, database);
 
     return true;
   }
@@ -50,15 +45,7 @@ public class TrevorCommon implements TrevorAPI {
 
   public boolean stop() {
     if (database != null) {
-      database.open().thenAccept(connection -> {
-        connection.getNetworkPlayers().forEach(uuid -> {
-          DisconnectPayload payload = connection.destroy(UUID.fromString(uuid));
-
-          connection.publish(Keys.CHANNEL_DATA.of(), Protocol.serialize(payload, gson));
-        });
-
-        connection.deleteHeartbeat();
-      }).join();
+      database.open().thenAccept(DatabaseConnection::shutdown).join();
 
       database.kill();
     }
@@ -79,5 +66,9 @@ public class TrevorCommon implements TrevorAPI {
 
   public DatabaseProxyImpl getDatabaseProxy() {
     return proxy;
+  }
+
+  public static Gson gson() {
+    return gson;
   }
 }

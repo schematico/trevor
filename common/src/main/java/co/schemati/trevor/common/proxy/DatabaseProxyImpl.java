@@ -1,17 +1,19 @@
 package co.schemati.trevor.common.proxy;
 
-import com.google.gson.Gson;
 import co.schemati.trevor.api.data.Platform;
 import co.schemati.trevor.api.data.User;
 import co.schemati.trevor.api.database.Database;
 import co.schemati.trevor.api.database.DatabaseConnection;
+import co.schemati.trevor.api.database.DatabaseProxy;
 import co.schemati.trevor.api.network.payload.ConnectPayload;
 import co.schemati.trevor.api.network.payload.DisconnectPayload;
 import co.schemati.trevor.api.network.payload.NetworkPayload;
 import co.schemati.trevor.api.network.payload.ServerChangePayload;
-import co.schemati.trevor.api.database.DatabaseProxy;
 import co.schemati.trevor.api.util.Keys;
+import co.schemati.trevor.common.TrevorCommon;
+import co.schemati.trevor.common.database.redis.RedisDatabase;
 import co.schemati.trevor.common.util.Protocol;
+import com.google.gson.Gson;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
@@ -24,22 +26,22 @@ public class DatabaseProxyImpl implements DatabaseProxy {
 
   private final String instance;
 
-  public DatabaseProxyImpl(Platform platform, Database database, Gson gson) {
+  public DatabaseProxyImpl(Platform platform, Database database) {
     this.platform = platform;
     this.database = database;
-    this.gson = gson;
+    this.gson = TrevorCommon.gson();
 
     this.instance = platform.getInstanceConfiguration().getID();
   }
 
-  public CompletableFuture<ConnectResult> onPlayerConnect(User user) {
+    public CompletableFuture<ConnectResult> onPlayerConnect(User user) {
     return database.open().thenApply(connection -> {
       try {
         if (!connection.isOnline(user)) {
           ConnectPayload payload = ConnectPayload.of(instance, user.uuid(), user.address());
 
           connection.create(user);
-          post(Keys.CHANNEL_DATA.of(), connection, payload);
+          post(RedisDatabase.CHANNEL_DATA, connection, payload);
 
           return ConnectResult.allow();
         }
@@ -57,7 +59,7 @@ public class DatabaseProxyImpl implements DatabaseProxy {
       DisconnectPayload payload = DisconnectPayload.of(instance, user.uuid(), timestamp);
 
       connection.destroy(user.uuid());
-      post(Keys.CHANNEL_DATA.of(), connection, payload);
+      post(RedisDatabase.CHANNEL_DATA, connection, payload);
     });
   }
 
@@ -68,7 +70,7 @@ public class DatabaseProxyImpl implements DatabaseProxy {
              ServerChangePayload.of(instance, user.uuid(), server, previousServer);
 
      connection.setServer(user, server);
-     post(Keys.CHANNEL_DATA.of(), connection, payload);
+     post(RedisDatabase.CHANNEL_DATA, connection, payload);
    });
   }
 

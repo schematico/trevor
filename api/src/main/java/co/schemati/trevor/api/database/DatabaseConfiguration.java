@@ -1,8 +1,8 @@
 package co.schemati.trevor.api.database;
 
 import co.schemati.trevor.api.data.Platform;
-import com.google.gson.Gson;
 import co.schemati.trevor.api.instance.InstanceData;
+import com.google.gson.Gson;
 
 /**
  * Represents the configuration used to construct the database reference.

@@ -57,4 +57,9 @@ public abstract class User {
 
     return data;
   }
+
+  @Override
+  public String toString() {
+    return uuid.toString();
+  }
 }

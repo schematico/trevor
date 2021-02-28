@@ -1,7 +1,7 @@
 package co.schemati.trevor.bungee.platform.event;
 
-import co.schemati.trevor.api.network.payload.ServerChangePayload;
 import co.schemati.trevor.api.network.event.NetworkServerChangeEvent;
+import co.schemati.trevor.api.network.payload.ServerChangePayload;
 
 import java.util.UUID;
 

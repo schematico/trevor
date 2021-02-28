@@ -32,4 +32,17 @@ public class Strings {
   public static String toSafeString(Object value) {
     return value != null ? value.toString() : "null";
   }
+
+  /**
+   * Replaces all occurrences of `{}` with the result of {@link Object#toString} on the provided
+   * object.
+   *
+   * @param text the string
+   * @param value the object
+   *
+   * @return the format replaced string
+   */
+  public static String replace(String text, Object value) {
+    return text.replace("{}", value.toString());
+  }
 }
