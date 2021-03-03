@@ -10,16 +10,34 @@ import java.util.UUID;
 public abstract class User {
 
   private final UUID uuid;
+  private final String name;
   private final String address;
 
   /**
    * Construct a new user.
    *
+   * @deprecated see {@link #User(UUID, String, String)}.
+   *
    * @param uuid the user uuid
    * @param address the user address
    */
+  @Deprecated
   protected User(UUID uuid, String address) {
     this.uuid = uuid;
+    this.name = null;
+    this.address = address;
+  }
+
+  /**
+   * Construct a new user.
+   *
+   * @param uuid the user uuid
+   * @param name the user name
+   * @param address the user address
+   */
+  protected User(UUID uuid, String name, String address) {
+    this.uuid = uuid;
+    this.name = name;
     this.address = address;
   }
 
@@ -30,6 +48,15 @@ public abstract class User {
    */
   public UUID uuid() {
     return uuid;
+  }
+
+  /**
+   * The user's name.
+   *
+   * @return uuid
+   */
+  public String name() {
+    return name;
   }
 
   /**

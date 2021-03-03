@@ -27,6 +27,7 @@ public class BungeeListener implements Listener {
 
     // TODO: Maybe keep a map of platform users
     BungeeUser user = new BungeeUser(connection.getUniqueId(),
+            connection.getName(),
             connection.getSocketAddress().toString());
 
     event.registerIntent(plugin);

@@ -15,6 +15,13 @@ public interface NetworkConnectEvent extends NetworkEvent {
   UUID uuid();
 
   /**
+   * The {@link co.schemati.trevor.api.data.User}'s name.
+   *
+   * @return the name
+   */
+  String name();
+
+  /**
    * The {@link co.schemati.trevor.api.data.User}'s address.
    *
    * @return the address
