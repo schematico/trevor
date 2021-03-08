@@ -106,7 +106,7 @@ public class RedisConnection implements DatabaseConnection {
 
   @Override
   public boolean isOnline(User user) {
-    return connection.exists(replace(PLAYER_DATA, user));
+    return connection.hexists(replace(PLAYER_DATA, user), "server");
   }
 
   @Override
