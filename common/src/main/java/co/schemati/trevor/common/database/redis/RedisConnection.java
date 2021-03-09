@@ -51,7 +51,7 @@ public class RedisConnection implements DatabaseConnection {
       if (timestamp <= lastBeat + (30 * 1000)) { // 30 seconds
         builder.add(entry.getKey());
 
-        playerCount += connection.scard(replace(INSTANCE_PLAYERS, entry));
+        playerCount += connection.scard(replace(INSTANCE_PLAYERS, entry.getKey()));
       } else {
         // TODO: Potentially notify that the instance could be dead.
       }
