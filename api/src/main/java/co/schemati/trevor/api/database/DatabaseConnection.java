@@ -26,8 +26,12 @@ public interface DatabaseConnection extends Closeable {
   /**
    * Updates a {@link InstanceData} instance using values from the remote database.
    *
+   * @deprecated Should be implemented by {@link DatabaseConnection#beat()}.
+   * @see DatabaseConnection#beat()
+   *
    * @param data the instance data
    */
+  @Deprecated
   void update(InstanceData data);
 
   /**

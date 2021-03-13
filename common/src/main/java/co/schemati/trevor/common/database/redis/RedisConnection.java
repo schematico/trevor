@@ -6,14 +6,17 @@ import co.schemati.trevor.api.instance.InstanceData;
 import co.schemati.trevor.api.network.payload.DisconnectPayload;
 import com.google.common.collect.ImmutableList;
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.ScanParams;
 import redis.clients.jedis.ScanResult;
 
 import javax.annotation.Nullable;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static co.schemati.trevor.api.util.Strings.replace;
 import static co.schemati.trevor.common.database.redis.RedisDatabase.HEARTBEAT;
@@ -25,10 +28,12 @@ public class RedisConnection implements DatabaseConnection {
 
   private final String instance;
   private final Jedis connection;
+  private final InstanceData data;
 
-  public RedisConnection(String instance, Jedis connection) {
+  public RedisConnection(String instance, Jedis connection, InstanceData data) {
     this.instance = instance;
     this.connection = connection;
+    this.data = data;
   }
 
   @Override
@@ -36,11 +41,6 @@ public class RedisConnection implements DatabaseConnection {
     long timestamp = System.currentTimeMillis();
 
     connection.hset(HEARTBEAT, instance, String.valueOf(timestamp));
-  }
-
-  @Override
-  public void update(InstanceData data) {
-    long timestamp = System.currentTimeMillis();
 
     ImmutableList.Builder<String> builder = ImmutableList.builder();
     int playerCount = 0;
@@ -58,6 +58,12 @@ public class RedisConnection implements DatabaseConnection {
     }
 
     data.update(builder.build(), playerCount);
+  }
+
+  @Override
+  @Deprecated
+  public void update(InstanceData data) {
+    // Deprecated, moved to beat.
   }
 
   @Override
@@ -131,30 +137,16 @@ public class RedisConnection implements DatabaseConnection {
 
   @Override
   public Set<String> getNetworkPlayers() {
-    // TODO: Consider caching this to be updated with the heartbeat.
-    Set<String> players = new HashSet<>();
-    ScanResult<String> scanner = connection.scan("instance");
-    while (!scanner.isCompleteIteration()) {
-      List<String> result = scanner.getResult();
-
-      result.forEach(instance ->
-              players.addAll(connection.smembers(replace(INSTANCE_PLAYERS, instance)))
-      );
-    }
-
-    return players;
+    return data.getInstances().stream()
+            .map(name -> connection.smembers(replace(INSTANCE_PLAYERS, name)))
+            .flatMap(Collection::stream)
+            .collect(Collectors.toSet());
   }
 
   @Deprecated
   @Override
   public long getNetworkPlayerCount() {
-    long count = 0;
-    ScanResult<String> scanner = connection.scan("instance");
-    while (!scanner.isCompleteIteration()) {
-      count += scanner.getResult().size();
-    }
-
-    return count;
+    return data.getPlayerCount();
   }
 
   @Override

@@ -63,11 +63,7 @@ public class RedisDatabase implements Database {
 
   @Override
   public void beat() {
-    open().thenAccept(connection -> {
-      connection.beat();
-
-      connection.update(data);
-    });
+    open().thenAccept(DatabaseConnection::beat);
   }
 
   @Override
@@ -76,7 +72,7 @@ public class RedisDatabase implements Database {
 
     executor.submit(() -> {
       try (Jedis resource = getResource()) {
-        future.complete(new RedisConnection(platform.getInstanceConfiguration().getID(), resource));
+        future.complete(new RedisConnection(platform.getInstanceConfiguration().getID(), resource, data));
       } catch (JedisConnectionException exception) {
         future.completeExceptionally(exception);
       }
