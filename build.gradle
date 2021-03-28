@@ -23,7 +23,7 @@ allprojects {
         configurateVersion = "3.7.1"
         gsonVersion = "2.8.5"
         guavaVersion = "28.2-jre"
-        jedisVersion = '3.2.0'
+        jedisVersion = '3.5.2'
 
         // Platform versions
 		bungeeVersion = '1.16-R0.5-SNAPSHOT'
@@ -44,7 +44,6 @@ allprojects {
         compileOnly ("com.google.code.gson:gson:${gsonVersion}") {
             transitive = true
         }
-        compile "redis.clients:jedis:${jedisVersion}"
     }
 
     tasks.named("build") {
