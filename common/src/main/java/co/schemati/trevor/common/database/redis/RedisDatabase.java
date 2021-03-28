@@ -52,7 +52,7 @@ public class RedisDatabase implements Database {
       return false;
     }
 
-    this.heartbeat = executor.scheduleAtFixedRate(this::beat, 0, 5, TimeUnit.SECONDS);
+    this.heartbeat = executor.scheduleAtFixedRate(this::beat, 5, 5, TimeUnit.SECONDS);
 
     this.intercom = new RedisIntercom(platform, this, proxy, gson);
 

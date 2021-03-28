@@ -7,7 +7,9 @@ import co.schemati.trevor.api.util.Strings;
 import co.schemati.trevor.common.util.Protocol;
 import com.google.common.collect.Sets;
 import com.google.gson.Gson;
+import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPubSub;
+import redis.clients.jedis.exceptions.JedisException;
 
 import java.util.Arrays;
 import java.util.Set;
@@ -26,6 +28,7 @@ public class RedisIntercom extends JedisPubSub implements DatabaseIntercom {
   private final String instance;
   private final Set<String> channels = Sets.newHashSet();
 
+  private Jedis connection;
   private Future<?> task;
 
   public RedisIntercom(Platform platform, RedisDatabase database, DatabaseProxy proxy, Gson gson) {
@@ -47,12 +50,18 @@ public class RedisIntercom extends JedisPubSub implements DatabaseIntercom {
 
   @Override
   public void run() {
-    database.getResource().subscribe(this, channels.toArray(new String[0]));
+    try {
+      this.connection = database.getResource();
+
+      connection.subscribe(this, channels.toArray(String[]::new));
+    } catch (JedisException exception) {
+      exception.printStackTrace();
+    }
   }
 
   public void add(String... channel) {
     channels.addAll(Arrays.asList(channel));
-    super.subscribe(channels.toArray(new String[0]));
+    super.subscribe(channels.toArray(String[]::new));
   }
 
   public void remove(String... channel) {
@@ -61,10 +70,12 @@ public class RedisIntercom extends JedisPubSub implements DatabaseIntercom {
   }
 
   public void kill() {
-    task.cancel(true);
-
     channels.forEach(super::unsubscribe);
     channels.clear();
+
+    connection.close();
+
+    task.cancel(true);
   }
 
   @Override
