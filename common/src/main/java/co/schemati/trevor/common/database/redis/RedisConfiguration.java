@@ -21,7 +21,7 @@ public class RedisConfiguration implements DatabaseConfiguration {
                             int timeout) {
     this.address = address;
     this.port = port;
-    this.password = password;
+    this.password = password != null && password.isEmpty() ? null : password;
     this.maxConnections = maxConnections;
     this.useSSL = useSSL;
     this.timeout = timeout;
