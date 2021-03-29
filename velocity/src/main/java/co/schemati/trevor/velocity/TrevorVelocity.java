@@ -14,7 +14,14 @@ import org.slf4j.Logger;
 
 import java.nio.file.Path;
 
-@Plugin(id = "trevor")
+@Plugin(
+        id = "trevor",
+        name = "Trevor",
+        version = "@VERSION@",
+        description = "@DESCRIPTION@",
+        url = "https://schemati.co/",
+        authors = { "Schematico" }
+)
 public class TrevorVelocity {
 
   private TrevorCommon common;

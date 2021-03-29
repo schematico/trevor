@@ -1,5 +1,6 @@
 plugins {
 	id 'java'
+	id 'net.kyori.blossom' version '1.1.0'
 }
 
 repositories {
@@ -15,4 +16,9 @@ dependencies {
 
 	compileOnly "com.velocitypowered:velocity-api:${velocityVersion}"
 	annotationProcessor "com.velocitypowered:velocity-api:${velocityVersion}"
+}
+
+blossom {
+	replaceToken '@VERSION@', version
+	replaceToken '@DESCRIPTION@', description
 }
