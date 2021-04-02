@@ -70,7 +70,7 @@ public class RedisDatabase implements Database {
   public CompletableFuture<DatabaseConnection> open() {
     CompletableFuture<DatabaseConnection> future = new CompletableFuture<>();
 
-    executor.submit(() -> {
+    executor.execute(() -> {
       try (Jedis resource = getResource()) {
         future.complete(new RedisConnection(platform.getInstanceConfiguration().getID(), resource, data));
       } catch (JedisConnectionException exception) {
