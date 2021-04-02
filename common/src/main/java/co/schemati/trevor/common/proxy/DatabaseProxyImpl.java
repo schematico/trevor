@@ -38,7 +38,7 @@ public class DatabaseProxyImpl implements DatabaseProxy {
     return database.open().thenApply(connection -> {
       try {
         if (!connection.isOnline(user)) {
-          ConnectPayload payload = ConnectPayload.of(instance, user.uuid(), user.address());
+          ConnectPayload payload = ConnectPayload.of(instance, user.uuid(), user.name(), user.address());
 
           connection.create(user);
           post(RedisDatabase.CHANNEL_DATA, connection, payload);
