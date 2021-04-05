@@ -1,6 +1,7 @@
 package co.schemati.trevor.api.database;
 
 import co.schemati.trevor.api.data.User;
+import co.schemati.trevor.api.instance.InstanceUserMap;
 import co.schemati.trevor.api.network.payload.NetworkPayload;
 
 import java.util.Optional;
@@ -72,6 +73,15 @@ public interface DatabaseProxy {
    * @param message the message
    */
   void onNetworkIntercom(String channel, String message);
+
+  /**
+   * Returns the instance's local {@link User} map.
+   *
+   * Note: This map is only for users connected to this instance.
+   *
+   * @return the user map
+   */
+  InstanceUserMap users();
 
   /**
    * Represents the result of a {@link User} connection.

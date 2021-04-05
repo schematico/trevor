@@ -9,9 +9,9 @@ import co.schemati.trevor.api.network.payload.ConnectPayload;
 import co.schemati.trevor.api.network.payload.DisconnectPayload;
 import co.schemati.trevor.api.network.payload.NetworkPayload;
 import co.schemati.trevor.api.network.payload.ServerChangePayload;
-import co.schemati.trevor.api.util.Keys;
 import co.schemati.trevor.common.TrevorCommon;
 import co.schemati.trevor.common.database.redis.RedisDatabase;
+import co.schemati.trevor.api.instance.InstanceUserMap;
 import co.schemati.trevor.common.util.Protocol;
 import com.google.gson.Gson;
 
@@ -25,6 +25,7 @@ public class DatabaseProxyImpl implements DatabaseProxy {
   private final Gson gson;
 
   private final String instance;
+  private final InstanceUserMap users;
 
   public DatabaseProxyImpl(Platform platform, Database database) {
     this.platform = platform;
@@ -32,12 +33,15 @@ public class DatabaseProxyImpl implements DatabaseProxy {
     this.gson = TrevorCommon.gson();
 
     this.instance = platform.getInstanceConfiguration().getID();
+    this.users = new InstanceUserMap();
   }
 
     public CompletableFuture<ConnectResult> onPlayerConnect(User user) {
     return database.open().thenApply(connection -> {
       try {
         if (!connection.isOnline(user)) {
+          users.add(user.uuid(), user);
+
           ConnectPayload payload = ConnectPayload.of(instance, user.uuid(), user.name(), user.address());
 
           connection.create(user);
@@ -54,6 +58,10 @@ public class DatabaseProxyImpl implements DatabaseProxy {
 
   @Override
   public void onPlayerDisconnect(User user) {
+    if (!users.remove(user.uuid())) {
+      return; // User connection was rejected. Don't fire disconnect.
+    }
+
     long timestamp = System.currentTimeMillis();
     database.open().thenAccept(connection -> {
       DisconnectPayload payload = DisconnectPayload.of(instance, user.uuid(), timestamp);
@@ -89,5 +97,10 @@ public class DatabaseProxyImpl implements DatabaseProxy {
   @Override
   public void post(String channel, DatabaseConnection connection, NetworkPayload<?> payload) {
     connection.publish(channel, Protocol.serialize(payload, gson));
+  }
+
+  @Override
+  public InstanceUserMap users() {
+    return users;
   }
 }
